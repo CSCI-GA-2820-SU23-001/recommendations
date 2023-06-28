@@ -4,9 +4,9 @@ Models for Recommendation
 All of the models are stored in this module
 """
 import logging
-from flask_sqlalchemy import SQLAlchemy
-from enum import Enum
 from datetime import date
+from enum import Enum
+from flask_sqlalchemy import SQLAlchemy
 from flask import Flask
 
 logger = logging.getLogger("flask.app")
@@ -46,7 +46,8 @@ class Recommendation(db.Model):
     product_id = db.Column(db.Integer, nullable=False)
     create_date= db.Column(db.Date(), nullable=False, default=date.today())
     update_date= db.Column(db.Date(), nullable=False, default=date.today())
-    
+    bought_in_last_30_days = db.Column(db.Boolean, nullable=False, default=False)
+
     recommendation_type = db.Column(
         db.Enum(RecommendationType), nullable=False, server_default=(RecommendationType.UNKOWN.name)
     )
@@ -84,7 +85,8 @@ class Recommendation(db.Model):
             "product_id": self.product_id,
             "recommendation_type": self.recommendation_type,
             "create_date": self.create_date,
-            "update_date": self.update_date
+            "update_date": self.update_date,
+            "bought_in_last_30_days": self.bought_in_last_30_days,
             }
 
     def deserialize(self, data):
@@ -100,6 +102,7 @@ class Recommendation(db.Model):
             self.recommendation_type = data["recommendation_type"]
             self.create_date = data["create_date"]
             self.update_date = data["update_date"]
+            self.bought_in_last_30_days = data["bought_in_last_30_days"]
         except KeyError as error:
             raise DataValidationError(
                 "Invalid Recommendation: missing " + error.args[0]
