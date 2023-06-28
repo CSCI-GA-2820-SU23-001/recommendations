@@ -27,6 +27,11 @@
         "**/.DS_Store": true,
         "**/*.pyc": true,
         "**/__pycache__": true
-    }
+    },
+    "cSpell.words": [
+        "sqlalchemy",
+        "UNKOWN",
+        "UPSELL"
+    ]
 }
 
