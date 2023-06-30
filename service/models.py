@@ -53,13 +53,13 @@ class Recommendation(db.Model):
     )
 
     def __repr__(self):
-        return f"<Recommendation {self.user_id} id=[{self.id}]>"
+        return f"<Recommendation id=[{self.id}]>"
 
     def create(self):
         """
         Creates a Recommendation to the database
         """
-        logger.info("Creating %s", self.user_id)
+        logger.info("Creating recommendation for user id %s", self.user_id)
         self.id = None  # pylint: disable=invalid-name
         db.session.add(self)
         db.session.commit()
@@ -83,9 +83,9 @@ class Recommendation(db.Model):
             "id": self.id, 
             "user_id": self.user_id,
             "product_id": self.product_id,
-            "recommendation_type": self.recommendation_type,
-            "create_date": self.create_date,
-            "update_date": self.update_date,
+            "recommendation_type": self.recommendation_type.name, # create string from enum
+            "create_date": self.create_date.isoformat(),
+            "update_date": self.update_date.isoformat(),
             "bought_in_last_30_days": self.bought_in_last_30_days,
             }
 
@@ -99,9 +99,9 @@ class Recommendation(db.Model):
         try:
             self.user_id = data["user_id"]
             self.product_id = data["product_id"]
-            self.recommendation_type = data["recommendation_type"]
-            self.create_date = data["create_date"]
-            self.update_date = data["update_date"]
+            self.recommendation_type = getattr(RecommendationType, data["recommendation_type"]) # create enum from string
+            self.create_date = date.fromisoformat(data["create_date"])
+            self.update_date = date.fromisoformat(data["update_date"])
             self.bought_in_last_30_days = data["bought_in_last_30_days"]
         except KeyError as error:
             raise DataValidationError(
@@ -110,7 +110,7 @@ class Recommendation(db.Model):
         except TypeError as error:
             raise DataValidationError(
                 "Invalid Recommendation: body of request contained bad or no data - "
-                "Error message: " + error
+                "Error message: " + str(error)
             ) from error
         return self
 

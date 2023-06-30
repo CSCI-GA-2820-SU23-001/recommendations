@@ -5,8 +5,10 @@ Test cases for Recommendation Model
 import os
 import logging
 import unittest
-from service.models import Recommendation, DataValidationError, db
+from service.models import Recommendation, RecommendationType, DataValidationError, db
 from service import app
+from tests.factories import RecommendationFactory
+from datetime import date
 DATABASE_URI = os.getenv(
     "DATABASE_URI", "postgresql://postgres:postgres@localhost:5432/testdb"
 )
@@ -47,3 +49,75 @@ class TestRecommendation(unittest.TestCase):
     def test_example_replace_this(self):
         """ It should always be true """
         self.assertTrue(True)
+    
+    def test_serialize_a_recommendation(self):
+        """It should serialize a Recommendation"""
+        recommendation = RecommendationFactory()
+        data = recommendation.serialize()
+        self.assertNotEqual(data, None)
+        self.assertIn("id", data)
+        self.assertEqual(data["id"], recommendation.id)
+        self.assertIn("user_id", data)
+        self.assertEqual(data["user_id"], recommendation.user_id)
+        self.assertIn("product_id", data)
+        self.assertEqual(data["product_id"], recommendation.product_id)
+        self.assertIn("recommendation_type", data)
+        self.assertEqual(data["recommendation_type"], recommendation.recommendation_type.name)
+        self.assertIn("bought_in_last_30_days", data)
+        self.assertEqual(data["bought_in_last_30_days"], recommendation.bought_in_last_30_days)
+        self.assertEqual(date.fromisoformat(data["create_date"]), recommendation.create_date)
+        self.assertEqual(date.fromisoformat(data["update_date"]), recommendation.update_date)
+
+    def test_deserialize_a_recommendation(self):
+        """It should de-serialize a Recommendation"""
+        data = RecommendationFactory().serialize()
+        recommendation = Recommendation()
+        recommendation.deserialize(data)
+        self.assertNotEqual(recommendation, None)
+        self.assertEqual(recommendation.id, None)
+        self.assertEqual(recommendation.user_id, data["user_id"])
+        self.assertEqual(recommendation.product_id, data["product_id"])
+        self.assertEqual(recommendation.bought_in_last_30_days, data["bought_in_last_30_days"])
+        self.assertEqual(recommendation.create_date, date.fromisoformat(data["create_date"]))
+        self.assertEqual(recommendation.update_date, date.fromisoformat(data["update_date"]))
+
+    def test_deserialize_missing_data(self):
+        """It should not deserialize a Recommendation with missing data"""
+        data = {"id": 1, "user_id": 2, "product_id": 3}
+        recommendation = Recommendation()
+        self.assertRaises(DataValidationError, recommendation.deserialize, data)
+
+    def test_deserialize_bad_data(self):
+        """It should not deserialize bad data"""
+        data = "this is not a dictionary"
+        recommendation = Recommendation()
+        self.assertRaises(DataValidationError, recommendation.deserialize, data)
+
+    def test_create_a_recommendation(self):
+        """It should Create a recommendation and assert that it exists"""
+        recommendation = Recommendation(user_id=1, product_id=2, bought_in_last_30_days=True, 
+                                        recommendation_type=RecommendationType.UPSELL.name)
+        self.assertEqual(str(recommendation), "<Recommendation id=[None]>")
+        self.assertTrue(recommendation is not None)
+        self.assertEqual(recommendation.id, None)
+        self.assertEqual(recommendation.user_id, 1)
+        self.assertEqual(recommendation.product_id, 2)
+        self.assertEqual(recommendation.bought_in_last_30_days, True)
+        self.assertEqual(recommendation.recommendation_type, RecommendationType.UPSELL.name)
+        recommendation = Recommendation(user_id=1, product_id=2, bought_in_last_30_days=False, 
+                                        recommendation_type=RecommendationType.UPSELL.name)
+        self.assertEqual(recommendation.bought_in_last_30_days, False)
+
+    def test_add_a_recommendation(self):
+        """It should Create a recommendation and add it to the database"""
+        recommendations = Recommendation.all()
+        self.assertEqual(recommendations, [])
+        recommendation = Recommendation(user_id=1, product_id=2, bought_in_last_30_days=True, 
+                                        recommendation_type=RecommendationType.UPSELL.name)
+        self.assertTrue(recommendation is not None)
+        self.assertEqual(recommendation.id, None)
+        recommendation.create()
+        # Assert that it was assigned an id and shows up in the database
+        self.assertIsNotNone(recommendation.id)
+        recommendations = Recommendation.all()
+        self.assertEqual(len(recommendations), 1)
