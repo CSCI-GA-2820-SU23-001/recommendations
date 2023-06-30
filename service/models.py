@@ -42,7 +42,7 @@ class Recommendation(db.Model):
 
     # Table Schema
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(63), nullable=False)
+    user_id = db.Column(db.Integer, nullable=False)
     product_id = db.Column(db.Integer, nullable=False)
     create_date= db.Column(db.Date(), nullable=False, default=date.today())
     update_date= db.Column(db.Date(), nullable=False, default=date.today())
@@ -53,13 +53,13 @@ class Recommendation(db.Model):
     )
 
     def __repr__(self):
-        return f"<Recommendation {self.name} id=[{self.id}]>"
+        return f"<Recommendation {self.user_id} id=[{self.id}]>"
 
     def create(self):
         """
         Creates a Recommendation to the database
         """
-        logger.info("Creating %s", self.name)
+        logger.info("Creating %s", self.user_id)
         self.id = None  # pylint: disable=invalid-name
         db.session.add(self)
         db.session.commit()
@@ -68,12 +68,12 @@ class Recommendation(db.Model):
         """
         Updates a Recommendation to the database
         """
-        logger.info("Saving %s", self.name)
+        logger.info("Saving %s", self.user_id)
         db.session.commit()
 
     def delete(self):
         """ Removes a Recommendation from the data store """
-        logger.info("Deleting %s", self.name)
+        logger.info("Deleting %s", self.user_id)
         db.session.delete(self)
         db.session.commit()
 
@@ -81,7 +81,7 @@ class Recommendation(db.Model):
         """ Serializes a Recommendation into a dictionary """
         return {
             "id": self.id, 
-            "name": self.name,
+            "user_id": self.user_id,
             "product_id": self.product_id,
             "recommendation_type": self.recommendation_type,
             "create_date": self.create_date,
@@ -97,7 +97,7 @@ class Recommendation(db.Model):
             data (dict): A dictionary containing the resource data
         """
         try:
-            self.name = data["name"]
+            self.user_id = data["user_id"]
             self.product_id = data["product_id"]
             self.recommendation_type = data["recommendation_type"]
             self.create_date = data["create_date"]
@@ -137,11 +137,11 @@ class Recommendation(db.Model):
         return cls.query.get(by_id)
 
     @classmethod
-    def find_by_name(cls, name):
-        """Returns all Recommendations with the given name
+    def find_by_userid(cls, userId):
+        """Returns all Recommendations with the given user id
 
         Args:
-            name (string): the name of the Recommendations you want to match
+            user_id (int): the user_id of the Recommendations you want to match
         """
-        logger.info("Processing name query for %s ...", name)
-        return cls.query.filter(cls.name == name)
+        logger.info("Processing user_id query for %s ...", userId)
+        return cls.query.filter(cls.user_id == userId)
