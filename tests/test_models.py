@@ -128,11 +128,12 @@ class TestRecommendation(unittest.TestCase):
         test_recommendation.create()
         self.assertEqual(len(Recommendation.all()), 1)
         
-        # # delete the recommendation and make sure it isn't in the database
-        # test_recommendation.delete()
-        # self.assertEqual(len(Recommendation.all()), 0)
+        # delete the recommendation and make sure it isn't in the database
+        test_recommendation.delete()
+        self.assertEqual(len(Recommendation.all()), 0)
+
+
+
+
     
-        #  # Verify that the recommendation is still not in the database
-        # deleted_recommendation = Recommendation.find(id)
-        # print(deleted_recommendation)
-        # self.assertIsNone(deleted_recommendation)
+        
