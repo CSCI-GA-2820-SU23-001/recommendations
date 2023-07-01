@@ -74,7 +74,7 @@ class Recommendation(db.Model):
 
     def delete(self):
         """ Removes a Recommendation from the data store """
-        logger.info("Deleting %s", self.user_id)
+        logger.info("Deleting %s", self.id)
         db.session.delete(self)
         db.session.commit()
 
