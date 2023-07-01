@@ -107,3 +107,16 @@ class TestYourResourceServer(TestCase):
         test_recommendation.user_id = "1"
         response = self.client.post(BASE_URL, json=test_recommendation.serialize())
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+
+    # TEST CASES FOR DELETE #
+
+    def test_delete_a_recommendation(self):
+        test_recommendation = RecommendationFactory()
+        response = self.client.delete(f"{BASE_URL}/{test_recommendation.id}")
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+        self.assertEqual(len(response.data), 0)
+        # make sure they are deleted
+        response = self.client.get(f"{BASE_URL}/{test_recommendation.id}")
+        self.assertEqual(response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
+

@@ -6,8 +6,9 @@ All of the models are stored in this module
 import logging
 from datetime import date
 from enum import Enum
-from flask_sqlalchemy import SQLAlchemy
 from flask import Flask
+from flask_sqlalchemy import SQLAlchemy
+
 
 logger = logging.getLogger("flask.app")
 
@@ -73,7 +74,7 @@ class Recommendation(db.Model):
 
     def delete(self):
         """ Removes a Recommendation from the data store """
-        logger.info("Deleting %s", self.user_id)
+        logger.info("Deleting %s", self.id)
         db.session.delete(self)
         db.session.commit()
 
@@ -97,6 +98,7 @@ class Recommendation(db.Model):
             data (dict): A dictionary containing the resource data
         """
         try:
+            self.id = data["id"]
             self.user_id = data["user_id"]
             self.product_id = data["product_id"]
             self.recommendation_type = getattr(RecommendationType, data["recommendation_type"]) # create enum from string
