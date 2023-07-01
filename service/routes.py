@@ -57,6 +57,20 @@ def create_recommendations():
     return jsonify(message), status.HTTP_201_CREATED
 
 
+######################################################################
+# DELETE A RECOMMENDATION
+######################################################################
+
+@app.route("/recommendations/<int:recommendation_id>", methods=["DELETE"])
+def delete_recommendation(recommendation_id):
+    '''This endpoint will delete a Recommendation with the specified id'''
+    app.logger.info("Request to delete a recommendation_id %s", recommendation_id)
+    recommendation_id = Recommendation.find(recommendation_id)
+    if recommendation_id:
+        recommendation_id.delete()
+    
+    app.logger.info("Recommendation with ID %s delete complete.", recommendation_id)
+    return "", status.HTTP_204_NO_CONTENT
 
 
 
@@ -83,3 +97,6 @@ def check_content_type(content_type):
         status.HTTP_415_UNSUPPORTED_MEDIA_TYPE,
         f"Content-Type must be {content_type}",
     )
+
+
+    
