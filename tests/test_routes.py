@@ -7,6 +7,7 @@ Test cases can be run with the following:
 """
 import os
 import logging
+from logging import Formatter
 from unittest import TestCase
 from unittest.mock import MagicMock, patch
 from service import app
@@ -107,3 +108,59 @@ class TestYourResourceServer(TestCase):
         test_recommendation.user_id = "1"
         response = self.client.post(BASE_URL, json=test_recommendation.serialize())
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+ ######################################################################
+    #  UPDATE   TEST   CASES
+#######################################################################
+
+    def test_update_recommendation(self):
+        """It should Update an existing Recommendation"""
+        recommendation = Recommendation(
+            user_id=1, 
+            product_id=2, 
+            bought_in_last_30_days=True, 
+            recommendation_type=RecommendationType.UPSELL.name
+        )
+        db.session.add(recommendation)
+        db.session.commit()
+
+        current_recommendation = Recommendation.query.get(recommendation.id)
+        current_type = current_recommendation.recommendation_type
+       
+        response = self.client.put(BASE_URL + '/' +str(recommendation.id), json={})
+        # print(response)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        updated_recommendation = response.get_json()
+        self.assertNotEqual(updated_recommendation["recommendation_type"], current_type.name)
+        self.assertEqual(date.fromisoformat(updated_recommendation["update_date"]), date.today())
+    def test_method_not_allowed(self):
+        """It should return 405 when an unsupported method is used"""
+        recommendation = Recommendation(
+            user_id=1, 
+            product_id=2, 
+            bought_in_last_30_days=True, 
+            recommendation_type=RecommendationType.UPSELL.name
+        )
+        db.session.add(recommendation)
+        db.session.commit()
+
+        # Make a GET request to the update_recommendations route
+        response = self.client.get(BASE_URL + '/'+ str(recommendation.id))
+        self.assertEqual(response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
+        data = response.get_json()
+        self.assertEqual(data["error"], "Method not Allowed")
+    
+    def test_update_recommendation_with_non_integer_id(self):
+        """It should respond with a 404 for non-integer ids"""
+        response = self.client.put(BASE_URL + '/' +"abc", json={})
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+
+    def test_recommendation_not_found(self):
+        """
+        Test case for when a recommendation with the provided ID is not found.
+        """
+        response = self.client.put(BASE_URL + '/'+ str(999999), json={}, headers={"Content-Type": "application/json"})
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
