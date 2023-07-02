@@ -31,6 +31,24 @@ def index():
 
 # Place your REST API code here ...
 
+######################################################################
+# RETRIEVE A RECOMMENDATION (READ)
+######################################################################
+@app.route("/recommendations/<int:recommendation_id>", methods=["GET"])
+def get_recommendation(recommendation_id):
+    """
+    Retrieve a single recommendation
+    This endpoint will return a recommendation based on its id
+    """
+    app.logger.info("Request for recommendation with id: %s", recommendation_id)
+    recommendation = Recommendation.find(recommendation_id)
+    if not recommendation:
+        abort(status.HTTP_404_NOT_FOUND,
+              f"recommendation with id '{recommendation_id}' was not found.")
+
+    app.logger.info("Returning recommendation: %s",
+                    recommendation.user_id)
+    return jsonify(recommendation.serialize()), status.HTTP_200_OK
 
 ######################################################################
 # ADD A NEW RECOMMENDATION
