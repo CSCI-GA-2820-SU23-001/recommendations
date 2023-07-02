@@ -52,6 +52,20 @@ class TestYourResourceServer(TestCase):
     def tearDown(self):
         """ This runs after each test """
         db.session.remove()
+    
+    def _create_recommendations(self, count):
+        """Factory method to create recommendations in bulk"""
+        recommendations = []
+        for _ in range(count):
+            test_recommendation = RecommendationFactory()
+            response = self.client.post(BASE_URL, json=test_recommendation.serialize())
+            self.assertEqual(
+                response.status_code, status.HTTP_201_CREATED, "Could not create test recommendation"
+            )
+            new_recommendation = response.get_json()
+            test_recommendation.id = new_recommendation["id"]
+            recommendations.append(test_recommendation)
+        return recommendations
 
     ######################################################################
     #  P L A C E   T E S T   C A S E S   H E R E
@@ -108,6 +122,7 @@ class TestYourResourceServer(TestCase):
         test_recommendation.user_id = "1"
         response = self.client.post(BASE_URL, json=test_recommendation.serialize())
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
 
  ######################################################################
     #  UPDATE   TEST   CASES
@@ -190,4 +205,17 @@ class TestYourResourceServer(TestCase):
         """
         response = self.client.put(BASE_URL + '/'+ str(999999), json={}, headers={"Content-Type": "application/json"})
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    # TEST CASES FOR DELETE #
+
+    def test_delete_recommendation(self):
+        """It should Delete a Recommendation"""
+        test_recommendation = self._create_recommendations(1)[0]
+        response = self.client.delete(f"{BASE_URL}/{test_recommendation.id}")
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+        self.assertEqual(len(response.data), 0)
+        # makes sure they are deleted
+        response = self.client.get(f"{BASE_URL}/{test_recommendation.id}")
+        self.assertEqual(response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
+
 
