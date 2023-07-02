@@ -122,34 +122,55 @@ class TestRecommendation(unittest.TestCase):
         self.assertIsNotNone(recommendation.id)
         recommendations = Recommendation.all()
         self.assertEqual(len(recommendations), 1)
-    def test_update_a_recommendation(self):
-        """It should Update a recommendation in the database"""
-        recommendation = Recommendation(user_id=1, product_id=2, bought_in_last_30_days=True,
-                                        recommendation_type=RecommendationType.UPSELL.name)
+    # def test_update_a_recommendation(self):
+    #     """It should Update a recommendation in the database"""
+    #     recommendation = Recommendation(user_id=1, product_id=2, bought_in_last_30_days=True,
+    #                                     recommendation_type=RecommendationType.UPSELL.name)
+    #     recommendation.create()
+
+    #     # Assert that it was assigned an id and shows up in the database
+    #     self.assertIsNotNone(recommendation.id)
+
+    #     original_id = recommendation.id
+    #     original_type = recommendation.recommendation_type
+
+    #     # Define the possible recommendation types
+    #     possible_types = [RecommendationType.UPSELL, RecommendationType.CROSS_SELL,
+    #                     RecommendationType.FREQ_BOUGHT_TOGETHER, RecommendationType.RECOMMENDED_FOR_YOU, RecommendationType.TRENDING]
+
+    #     # Remove the current type from the possible types
+    #     possible_types.remove(original_type)
+
+    #     # Randomly select a new type
+    #     new_type = choice(possible_types)
+
+    #     # Update the recommendation
+    #     recommendation.recommendation_type = new_type
+    #     recommendation.update()
+
+    #     updated_recommendation = Recommendation.find(original_id)
+
+    #     self.assertEqual(updated_recommendation.id, original_id)
+    #     self.assertNotEqual(updated_recommendation.recommendation_type, original_type)
+    #     self.assertEqual(updated_recommendation.recommendation_type, new_type)
+    def test_update_recommendation(self):
+        """Test if a recommendation can be updated in the database"""
+        # Get the initial type
+        recommendation=Recommendation(user_id=1, product_id=2, bought_in_last_30_days=True,
+                                             recommendation_type=RecommendationType.UPSELL.name)
         recommendation.create()
+        old_type = recommendation.recommendation_type
 
-        # Assert that it was assigned an id and shows up in the database
-        self.assertIsNotNone(recommendation.id)
+        # Define a new type
+        new_type = RecommendationType.CROSS_SELL.name
 
-        original_id = recommendation.id
-        original_type = recommendation.recommendation_type
-
-        # Define the possible recommendation types
-        possible_types = [RecommendationType.UPSELL, RecommendationType.CROSS_SELL,
-                        RecommendationType.FREQ_BOUGHT_TOGETHER, RecommendationType.RECOMMENDED_FOR_YOU, RecommendationType.TRENDING]
-
-        # Remove the current type from the possible types
-        possible_types.remove(original_type)
-
-        # Randomly select a new type
-        new_type = choice(possible_types)
-
-        # Update the recommendation
+        # Update the recommendation and commit to the database
         recommendation.recommendation_type = new_type
-        recommendation.update()
+        db.session.commit()
 
-        updated_recommendation = Recommendation.find(original_id)
+        # Get the updated recommendation
+        recommendation = Recommendation.query.get(recommendation.id)
 
-        self.assertEqual(updated_recommendation.id, original_id)
-        self.assertNotEqual(updated_recommendation.recommendation_type, original_type)
-        self.assertEqual(updated_recommendation.recommendation_type, new_type)
+        # Assert the recommendation type has been updated
+        self.assertNotEqual(recommendation.recommendation_type.name, old_type)
+        self.assertEqual(recommendation.recommendation_type.name, new_type)

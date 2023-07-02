@@ -61,6 +61,41 @@ def create_recommendations():
 # UPDATE A NEW RECOMMENDATION TYPE
 ######################################################################
 
+# @app.route("/recommendations/<int:recommendation_id>", methods=["PUT"])
+# def update_recommendations(recommendation_id):
+#     """
+#     Update a Recommendation
+
+#     This endpoint will update a Recommendation based the body that is posted
+#     """
+#     app.logger.info("Request to update recommendation with id: %s", recommendation_id)
+#     check_content_type("application/json")
+#     recommendation = Recommendation.query.get(recommendation_id)
+#     if not recommendation:
+#         abort(status.HTTP_404_NOT_FOUND)
+
+#     # Get the current recommendation type
+#     current_type = recommendation.recommendation_type
+
+#     # Define the possible recommendation types
+#     possible_types = [RecommendationType.UPSELL, RecommendationType.CROSS_SELL,
+#                       RecommendationType.FREQ_BOUGHT_TOGETHER, RecommendationType.RECOMMENDED_FOR_YOU, RecommendationType.TRENDING]
+
+#     # Remove the current type from the possible types
+#     possible_types.remove(current_type)
+
+#     # Randomly select a new type
+#     new_type = choice(possible_types)
+
+#     # Update the recommendation type
+#     recommendation.recommendation_type = new_type
+#     recommendation.update_date = date.today()
+
+#     db.session.commit()
+
+#     app.logger.info("Recommendation with ID [%s] updated.", recommendation.id)
+#     return jsonify(recommendation.serialize()), status.HTTP_200_OK
+
 @app.route("/recommendations/<int:recommendation_id>", methods=["PUT"])
 def update_recommendations(recommendation_id):
     """
@@ -70,32 +105,25 @@ def update_recommendations(recommendation_id):
     """
     app.logger.info("Request to update recommendation with id: %s", recommendation_id)
     check_content_type("application/json")
+    
+    # Get the recommendation from the database
     recommendation = Recommendation.query.get(recommendation_id)
     if not recommendation:
         abort(status.HTTP_404_NOT_FOUND)
+    
+    # Deserialize the incoming request's JSON data into the recommendation
+    data = request.get_json()
+    if 'recommendation_type' in data:
+        new_type = data['recommendation_type']
+        
+        # Update the recommendation type
+        recommendation.recommendation_type = new_type
+        recommendation.update_date = date.today()
 
-    # Get the current recommendation type
-    current_type = recommendation.recommendation_type
-
-    # Define the possible recommendation types
-    possible_types = [RecommendationType.UPSELL, RecommendationType.CROSS_SELL,
-                      RecommendationType.FREQ_BOUGHT_TOGETHER, RecommendationType.RECOMMENDED_FOR_YOU, RecommendationType.TRENDING]
-
-    # Remove the current type from the possible types
-    possible_types.remove(current_type)
-
-    # Randomly select a new type
-    new_type = choice(possible_types)
-
-    # Update the recommendation type
-    recommendation.recommendation_type = new_type
-    recommendation.update_date = date.today()
-
-    db.session.commit()
+        db.session.commit()
 
     app.logger.info("Recommendation with ID [%s] updated.", recommendation.id)
     return jsonify(recommendation.serialize()), status.HTTP_200_OK
-
 
 
 
