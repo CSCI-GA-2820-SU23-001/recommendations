@@ -133,7 +133,7 @@ class TestYourResourceServer(TestCase):
         self.assertEqual(len(response.data), 0)
         # makes sure they are deleted
         response = self.client.get(f"{BASE_URL}/{test_recommendation.id}")
-        self.assertEqual(response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
 ######################################################################
     #  RETRIEVE/GET A RECOMMENDATION (READ)
