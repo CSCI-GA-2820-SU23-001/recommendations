@@ -3,7 +3,7 @@ My Service
 
 Describe what your service does here
 """
-
+from datetime import date
 from flask import Flask, jsonify, request, url_for, make_response, abort
 from service.common import status  # HTTP Status Codes
 from service.models import Recommendation
@@ -74,6 +74,33 @@ def create_recommendations():
     app.logger.info("Recommendation with ID [%s] created.", recommendation.id)
     return jsonify(message), status.HTTP_201_CREATED
 
+######################################################################
+# UPDATE A NEW RECOMMENDATION TYPE
+######################################################################
+
+@app.route("/recommendations/<int:recommendation_id>", methods=["PUT"])
+def update_recommendations(recommendation_id):
+    """
+    Update a Recommendation
+    This endpoint will update a Recommendation based the body that is posted
+    
+    """
+    app.logger.info("Request to update recommendation with id: %s", recommendation_id)
+    check_content_type("application/json")
+    
+    # Get the recommendation from the database
+    recommendation=Recommendation.find(recommendation_id)
+    # recommendation = Recommendation.query.get(recommendation_id)
+    if not recommendation:
+        abort(status.HTTP_404_NOT_FOUND)
+    
+    # Deserialize the incoming request's JSON data into the recommendation
+    recommendation.deserialize(request.get_json())
+    recommendation.id = recommendation_id
+    recommendation.update_date = date.today()
+    recommendation.update()
+    app.logger.info("Recommendation with ID [%s] updated.", recommendation.id)
+    return jsonify(recommendation.serialize()), status.HTTP_200_OK
 
 ######################################################################
 # DELETE A RECOMMENDATION
@@ -89,6 +116,7 @@ def delete_recommendation(recommendation_id):
     
     app.logger.info("Recommendation with ID %s delete complete.", recommendation_id)
     return "", status.HTTP_204_NO_CONTENT
+
 
 
 

@@ -8,6 +8,7 @@ import unittest
 from service.models import Recommendation, RecommendationType, DataValidationError, db
 from service import app
 from tests.factories import RecommendationFactory
+from random import choice
 from datetime import date
 DATABASE_URI = os.getenv(
     "DATABASE_URI", "postgresql://postgres:postgres@localhost:5432/testdb"
@@ -122,6 +123,60 @@ class TestRecommendation(unittest.TestCase):
         recommendations = Recommendation.all()
         self.assertEqual(len(recommendations), 1)
 
+    # def test_update_a_recommendation(self):
+    #     """It should Update a recommendation in the database"""
+    #     recommendation = Recommendation(user_id=1, product_id=2, bought_in_last_30_days=True,
+    #                                     recommendation_type=RecommendationType.UPSELL.name)
+    #     recommendation.create()
+
+    #     # Assert that it was assigned an id and shows up in the database
+    #     self.assertIsNotNone(recommendation.id)
+
+    #     original_id = recommendation.id
+    #     original_type = recommendation.recommendation_type
+
+    #     # Define the possible recommendation types
+    #     possible_types = [RecommendationType.UPSELL, RecommendationType.CROSS_SELL,
+    #                     RecommendationType.FREQ_BOUGHT_TOGETHER, RecommendationType.RECOMMENDED_FOR_YOU, RecommendationType.TRENDING]
+
+    #     # Remove the current type from the possible types
+    #     possible_types.remove(original_type)
+
+    #     # Randomly select a new type
+    #     new_type = choice(possible_types)
+
+    #     # Update the recommendation
+    #     recommendation.recommendation_type = new_type
+    #     recommendation.update()
+
+    #     updated_recommendation = Recommendation.find(original_id)
+
+    #     self.assertEqual(updated_recommendation.id, original_id)
+    #     self.assertNotEqual(updated_recommendation.recommendation_type, original_type)
+    #     self.assertEqual(updated_recommendation.recommendation_type, new_type)
+    def test_update_recommendation(self):
+        """Test if a recommendation can be updated in the database"""
+        reco = RecommendationFactory()
+        reco.update_date=date.today()
+        logging.debug(reco)
+        reco.id = None
+        reco.create()
+        logging.debug(reco)
+        self.assertIsNotNone(reco.id)
+        # Change it and save it
+        reco.recommendation_type = RecommendationType.RECOMMENDED_FOR_YOU
+        original_id = reco.id
+        reco.update()
+        self.assertEqual(reco.id, original_id)
+        self.assertEqual(reco.recommendation_type, RecommendationType.RECOMMENDED_FOR_YOU)
+        # Fetch it back and make sure the id hasn't changed
+        # but the data did change
+        recos = Recommendation.all()
+        self.assertEqual(len(recos), 1)
+        self.assertEqual(recos[0].id, original_id)
+        self.assertEqual(recos[0].recommendation_type, RecommendationType.RECOMMENDED_FOR_YOU)
+        self.assertEqual(recos[0].update_date, date.today())
+
     def test_delete_a_recommendation(self):
         """It should Delete a Recommendation"""
         test_recommendation = RecommendationFactory()
@@ -132,8 +187,3 @@ class TestRecommendation(unittest.TestCase):
         test_recommendation.delete()
         self.assertEqual(len(Recommendation.all()), 0)
 
-
-
-
-    
-        
