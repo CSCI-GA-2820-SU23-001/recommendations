@@ -21,7 +21,7 @@ DATABASE_URI = os.getenv(
     "DATABASE_URI", "postgresql://postgres:postgres@localhost:5432/testdb"
 )
 BASE_URL = "/recommendations"
-
+POP_REC_URL = "/recommendations/popular"
 ######################################################################
 #  T E S T   C A S E S
 ######################################################################
@@ -240,3 +240,101 @@ class TestYourResourceServer(TestCase):
         data = response.get_json()
         logging.debug("Response data = %s", data)
         self.assertIn("was not found", data["message"])
+
+######################################################################
+#  LIST A RECOMMENDATION (LIST)
+######################################################################
+    def test_get_recommendation_list(self):
+        """It should Get a list of Recommendations"""
+        self._create_recommendations(5)
+        response = self.client.get(BASE_URL)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        data = response.get_json()
+        self.assertEqual(len(data), 5)
+
+    def test_get_popular_recommendation_list(self):
+        """It should Get a list of Popular Recommendations"""
+        # Create test recommendations for 5 products
+        count = 5
+        # Test Logic:
+        # Create 1 recommendation for 1st product, 2 for 2nd, ...
+        # 5th product is most popular because of 5 recommendations
+        for product in range(1, count + 1):
+            for _ in range(1, product + 1):
+                test_rec = RecommendationFactory().serialize()
+                test_rec["product_id"] = 123 + product
+                response = self.client.post(BASE_URL, json=test_rec)
+                self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+        # Test error conditions first
+        response = self.client.get(f"{POP_REC_URL}")
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+        response = self.client.get(f"{POP_REC_URL}", query_string="count=more")
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+        response = self.client.get(f"{POP_REC_URL}", query_string="count=6")
+        self.assertEqual(response.status_code, status.HTTP_413_REQUEST_ENTITY_TOO_LARGE)
+
+        response = self.client.get(f"{POP_REC_URL}", query_string="count=0")
+        self.assertEqual(response.status_code, status.HTTP_406_NOT_ACCEPTABLE)
+
+        # Test valid condition: Verify response length and most popular recommendation
+        response = self.client.get(f"{POP_REC_URL}", query_string="count=2")
+        data = response.get_json()
+        self.assertEqual(len(data), 2)
+        self.assertEqual(data[0]["product_id"], 128)
+
+    def test_query_recommendation_list_by_product_id(self):
+        """It should Query Recommendations by Product ID"""
+        recommendations = self._create_recommendations(10)
+        test_product_id = recommendations[0].product_id
+        product_id_recommendations = [
+            recommendation for recommendation in recommendations
+            if recommendation.product_id == test_product_id]
+        response = self.client.get(
+            BASE_URL,
+            query_string=f"product_id={test_product_id}"
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        data = response.get_json()
+        self.assertEqual(len(data), len(product_id_recommendations))
+        # check the data just to be sure
+        for recommendation in data:
+            self.assertEqual(recommendation["product_id"], test_product_id)
+
+    def test_query_recommendation_list_by_user_id(self):
+        """It should Query Recommendations by User ID"""
+        recommendations = self._create_recommendations(10)
+        test_user_id = recommendations[0].user_id
+        user_id_recommendations = [
+            recommendation for recommendation in recommendations
+            if recommendation.user_id == test_user_id]
+        response = self.client.get(
+            BASE_URL,
+            query_string=f"user_id={test_user_id}"
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        data = response.get_json()
+        self.assertEqual(len(data), len(user_id_recommendations))
+        # check the data just to be sure
+        for recommendation in data:
+            self.assertEqual(recommendation["user_id"], test_user_id)
+
+    def test_query_recommendation_list_by_bought_in_last30d(self):
+        """It should Query Recommendations by bought in the last 30 days"""
+        recommendations = self._create_recommendations(10)
+        test_bought_in_last_30d = recommendations[0].bought_in_last_30_days
+        bought_in_last_30d_recommendations = [
+            recommendation for recommendation in recommendations
+            if recommendation.bought_in_last_30_days == test_bought_in_last_30d]
+        response = self.client.get(
+            BASE_URL,
+            query_string=f"bought_in_last_30d={test_bought_in_last_30d}"
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        data = response.get_json()
+        self.assertEqual(len(data), len(bought_in_last_30d_recommendations))
+        # check the data just to be sure
+        for recommendation in data:
+            self.assertEqual(recommendation["bought_in_last_30_days"], test_bought_in_last_30d)

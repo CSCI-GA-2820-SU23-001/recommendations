@@ -138,11 +138,29 @@ class Recommendation(db.Model):
         return cls.query.get(by_id)
 
     @classmethod
-    def find_by_userid(cls, userId):
+    def find_by_user_id(cls, user_id):
         """Returns all Recommendations with the given user id
 
         Args:
             user_id (int): the user_id of the Recommendations you want to match
         """
-        logger.info("Processing user_id query for %s ...", userId)
-        return cls.query.filter(cls.user_id == userId)
+        logger.info("Processing user_id query for %s ...", user_id)
+        return cls.query.filter(cls.user_id == user_id)
+
+    @classmethod
+    def find_by_product_id(cls, by_id: int) -> list:
+        """ Returns all Recommendations for given Product ID """
+        logger.info("Processing lookup for product id %s ...", by_id)
+        return cls.query.filter(cls.product_id == by_id)
+    
+    @classmethod
+    def find_by_bought_in_last_30d(cls, bought_in_last_30d: bool = True) -> list:
+        """ Returns all Recommendations bought in last 30d """
+        logger.info("Processing bought_in_last30d lookup for %s ...", bought_in_last_30d)
+        return cls.query.filter(cls.bought_in_last_30_days == bought_in_last_30d)
+
+    @classmethod
+    def find_by_recommendation_type(cls, recommendation_type: RecommendationType = RecommendationType.UNKOWN) -> list:
+        """ Returns all Recommendations for given Type """
+        logger.info("Processing lookup for recommendation type %s ...", recommendation_type)
+        return cls.query.filter(cls.recommendation_type == recommendation_type)

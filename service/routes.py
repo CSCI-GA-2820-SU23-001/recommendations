@@ -30,6 +30,79 @@ def index():
 ######################################################################
 
 # Place your REST API code here ...
+######################################################################
+# LIST ALL RECOMMENDATIONS (LIST)
+######################################################################
+@app.route("/recommendations", methods=["GET"])
+def list_recommendations():
+    """Returns all of the Recommendations"""
+    app.logger.info("Request for recommendation list")
+    recommendations = []
+
+    product_id = request.args.get("product_id")
+    user_id = request.args.get("user_id")
+    bought_in_last_30d = request.args.get("bought_in_last_30d")
+    recommendation_type = request.args.get("recommendation_type")
+    
+    if product_id:
+        recommendations = Recommendation.find_by_product_id(product_id)
+    elif user_id:
+        recommendations = Recommendation.find_by_user_id(user_id)
+    elif bought_in_last_30d:
+        recommendations = Recommendation.find_by_bought_in_last_30d(bought_in_last_30d)
+    elif recommendation_type:
+        recommendations = Recommendation.find_by_recommendation_type(recommendation_type)
+    else:
+        recommendations = Recommendation.all()
+
+    results = [recommendation.serialize()
+               for recommendation in recommendations]
+    app.logger.info("Returning %d recommendations", len(results))
+    return jsonify(results), status.HTTP_200_OK
+
+######################################################################
+# LIST POPULAR RECOMMENDATIONS (POPULAR = MOST VIEWED)
+######################################################################
+@app.route("/recommendations/popular", methods=["GET"])
+def list_popular_recommendations():
+    """Returns count number of popular recommendations"""
+    app.logger.info("Request to list popular recommendations")
+    recommendations = []
+
+    # Required parameter
+    count = request.args.get("count")
+
+    # Get number of views for products viewed_in_last30d
+    popular_tracker = {}
+    for recommendation in recommendations:
+        if recommendation.bought_in_last_30_days:
+            if recommendation.product_id in popular_tracker:
+                popular_tracker[recommendation.product_id] += 1
+            else:
+                popular_tracker[recommendation.product_id] = 1
+
+    # Sort by most popular products
+    sorted_tracker = sorted(popular_tracker.items(),
+                            key=lambda x: x[1], reverse=True)
+
+    # Process results after checking for corner cases
+    results = []
+    if (count is None) or not count.isnumeric():
+        abort(status.HTTP_400_BAD_REQUEST,
+              "Parameter 'count' not specified/malformed")
+    elif int(count) > len(sorted_tracker):
+        abort(status.HTTP_413_REQUEST_ENTITY_TOO_LARGE,
+              "Too many recommendations requested")
+    elif int(count) <= 0:
+        abort(status.HTTP_406_NOT_ACCEPTABLE,
+              "Invalid number of recommendations requested")
+    else:
+        for rec in sorted_tracker[:int(count)]:
+            prod_res = Recommendation.find_by_product_id(rec[0])
+            results.append(prod_res[0].serialize())
+
+    app.logger.info("Returning %d popular recommendations", len(results))
+    return jsonify(results), status.HTTP_200_OK
 
 ######################################################################
 # RETRIEVE A RECOMMENDATION (READ)
