@@ -32,6 +32,24 @@ def index():
 
 # Place your REST API code here ...
 
+######################################################################
+# RETRIEVE A RECOMMENDATION (READ)
+######################################################################
+@app.route("/recommendations/<int:recommendation_id>", methods=["GET"])
+def get_recommendation(recommendation_id):
+    """
+    Retrieve a single recommendation
+    This endpoint will return a recommendation based on its id
+    """
+    app.logger.info("Request for recommendation with id: %s", recommendation_id)
+    recommendation = Recommendation.find(recommendation_id)
+    if not recommendation:
+        abort(status.HTTP_404_NOT_FOUND,
+              f"recommendation with id '{recommendation_id}' was not found.")
+
+    app.logger.info("Returning recommendation: %s",
+                    recommendation.user_id)
+    return jsonify(recommendation.serialize()), status.HTTP_200_OK
 
 ######################################################################
 # ADD A NEW RECOMMENDATION
@@ -62,6 +80,9 @@ def create_recommendations():
 ######################################################################
 
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 013168b931e137f6fda45f534d985097193185cb
 # @app.route("/recommendations/<int:recommendation_id>", methods=["PUT"])
 # def update_recommendations(recommendation_id):
 #     """
@@ -84,6 +105,7 @@ def create_recommendations():
 
 #     # Remove the current type from the possible types
 #     possible_types.remove(current_type)
+
 
 #     # Randomly select a new type
 #     new_type = choice(possible_types)
@@ -125,7 +147,11 @@ def update_recommendations(recommendation_id):
 
     app.logger.info("Recommendation with ID [%s] updated.", recommendation.id)
     return jsonify(recommendation.serialize()), status.HTTP_200_OK
+<<<<<<< HEAD
 =======
+=======
+
+>>>>>>> 013168b931e137f6fda45f534d985097193185cb
 ######################################################################
 # DELETE A RECOMMENDATION
 ######################################################################
@@ -140,7 +166,11 @@ def delete_recommendation(recommendation_id):
     
     app.logger.info("Recommendation with ID %s delete complete.", recommendation_id)
     return "", status.HTTP_204_NO_CONTENT
+<<<<<<< HEAD
 >>>>>>> origin/master
+=======
+
+>>>>>>> 013168b931e137f6fda45f534d985097193185cb
 
 
 

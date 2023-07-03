@@ -124,6 +124,10 @@ class TestYourResourceServer(TestCase):
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+
+>>>>>>> 013168b931e137f6fda45f534d985097193185cb
  ######################################################################
     #  UPDATE   TEST   CASES
 #######################################################################
@@ -205,6 +209,7 @@ class TestYourResourceServer(TestCase):
         """
         response = self.client.put(BASE_URL + '/'+ str(999999), json={}, headers={"Content-Type": "application/json"})
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+<<<<<<< HEAD
 =======
 
     # TEST CASES FOR DELETE #
@@ -219,4 +224,38 @@ class TestYourResourceServer(TestCase):
         response = self.client.get(f"{BASE_URL}/{test_recommendation.id}")
         self.assertEqual(response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
 >>>>>>> origin/master
+=======
+>>>>>>> 013168b931e137f6fda45f534d985097193185cb
 
+    # TEST CASES FOR DELETE #
+
+    def test_delete_recommendation(self):
+        """It should Delete a Recommendation"""
+        test_recommendation = self._create_recommendations(1)[0]
+        response = self.client.delete(f"{BASE_URL}/{test_recommendation.id}")
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+        self.assertEqual(len(response.data), 0)
+        # makes sure they are deleted
+        response = self.client.get(f"{BASE_URL}/{test_recommendation.id}")
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+######################################################################
+    #  RETRIEVE/GET A RECOMMENDATION (READ)
+######################################################################
+
+    def test_get_recommendation(self):
+        """It should Get a single recommendation"""
+        # get the id of a recommendation
+        test_recommendation = self._create_recommendations(1)[0]
+        response = self.client.get(f"{BASE_URL}/{test_recommendation.id}")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        data = response.get_json()
+        self.assertEqual(data["user_id"], test_recommendation.user_id)
+
+    def test_get_recommendation_not_found(self):
+        """It should not Get a recommendation thats not found"""
+        response = self.client.get(f"{BASE_URL}/0")
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        data = response.get_json()
+        logging.debug("Response data = %s", data)
+        self.assertIn("was not found", data["message"])
