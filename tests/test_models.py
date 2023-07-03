@@ -122,6 +122,7 @@ class TestRecommendation(unittest.TestCase):
         self.assertIsNotNone(recommendation.id)
         recommendations = Recommendation.all()
         self.assertEqual(len(recommendations), 1)
+<<<<<<< HEAD
     # def test_update_a_recommendation(self):
     #     """It should Update a recommendation in the database"""
     #     recommendation = Recommendation(user_id=1, product_id=2, bought_in_last_30_days=True,
@@ -174,3 +175,21 @@ class TestRecommendation(unittest.TestCase):
         # Assert the recommendation type has been updated
         self.assertNotEqual(recommendation.recommendation_type.name, old_type)
         self.assertEqual(recommendation.recommendation_type.name, new_type)
+=======
+
+    def test_delete_a_recommendation(self):
+        """It should Delete a Recommendation"""
+        test_recommendation = RecommendationFactory()
+        test_recommendation.create()
+        self.assertEqual(len(Recommendation.all()), 1)
+        
+        # delete the recommendation and make sure it isn't in the database
+        test_recommendation.delete()
+        self.assertEqual(len(Recommendation.all()), 0)
+
+
+
+
+    
+        
+>>>>>>> origin/master
