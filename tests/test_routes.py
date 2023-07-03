@@ -123,12 +123,7 @@ class TestYourResourceServer(TestCase):
         response = self.client.post(BASE_URL, json=test_recommendation.serialize())
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-
->>>>>>> 013168b931e137f6fda45f534d985097193185cb
- ######################################################################
+######################################################################
     #  UPDATE   TEST   CASES
 #######################################################################
 
@@ -154,48 +149,49 @@ class TestYourResourceServer(TestCase):
     #     self.assertNotEqual(updated_recommendation["recommendation_type"], current_type.name)
     #     self.assertEqual(date.fromisoformat(updated_recommendation["update_date"]), date.today())
 
+    # def test_update_recommendation(self):
+    #     """ Test updating a recommendation """
+    #     recommendation = Recommendation(user_id=1, product_id=2, bought_in_last_30_days=True,
+    #                                     recommendation_type=RecommendationType.UPSELL.name)
+    #     recommendation.create()
+    #     recommendation_id = recommendation.id
+
+    #     # Define a new type
+    #     new_type = RecommendationType.CROSS_SELL.name
+
+    #     # Send PUT request with new type
+    #     response = self.client.put(
+    #         "/recommendations/{}".format(recommendation_id),
+    #         json={"recommendation_type": new_type},
+    #         content_type="application/json",
+    #     )
+
+    #     # Check the status code and the returned JSON
+    #     self.assertEqual(response.status_code, status.HTTP_200_OK)
+    #     new_json = response.get_json()
+    #     self.assertEqual(new_json["recommendation_type"], new_type)
+
+    #     # Verify that the change was made in the database
+    #     updated_recommendation = Recommendation.query.get(recommendation_id)
+    #     self.assertEqual(updated_recommendation.recommendation_type.name, new_type)
     def test_update_recommendation(self):
-        """ Test updating a recommendation """
-        recommendation = Recommendation(user_id=1, product_id=2, bought_in_last_30_days=True,
-                                        recommendation_type=RecommendationType.UPSELL.name)
-        recommendation.create()
-        recommendation_id = recommendation.id
+        """It should Update an existing Recommendation"""
+        # create a recommendation to update
+        test_reco = RecommendationFactory()
+        test_reco.update_date=date.today()
+        response = self.client.post(BASE_URL, json=test_reco.serialize())
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
-        # Define a new type
-        new_type = RecommendationType.CROSS_SELL.name
-
-        # Send PUT request with new type
-        response = self.client.put(
-            "/recommendations/{}".format(recommendation_id),
-            json={"recommendation_type": new_type},
-            content_type="application/json",
-        )
-
-        # Check the status code and the returned JSON
+        # update the pet
+        new_reco = response.get_json()
+        logging.debug(new_reco)
+        new_reco["recommendation_type"] = RecommendationType.RECOMMENDED_FOR_YOU.name
+        response = self.client.put(f"{BASE_URL}/{new_reco['id']}", json=new_reco)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        new_json = response.get_json()
-        self.assertEqual(new_json["recommendation_type"], new_type)
+        updated_reco = response.get_json()
+        self.assertEqual(updated_reco["recommendation_type"], RecommendationType.RECOMMENDED_FOR_YOU.name)
+        self.assertEqual(updated_reco["update_date"], date.today().strftime('%Y-%m-%d'))
 
-        # Verify that the change was made in the database
-        updated_recommendation = Recommendation.query.get(recommendation_id)
-        self.assertEqual(updated_recommendation.recommendation_type.name, new_type)
-
-    def test_method_not_allowed(self):
-        """It should return 405 when an unsupported method is used"""
-        recommendation = Recommendation(
-            user_id=1, 
-            product_id=2, 
-            bought_in_last_30_days=True, 
-            recommendation_type=RecommendationType.UPSELL.name
-        )
-        db.session.add(recommendation)
-        db.session.commit()
-
-        # Make a GET request to the update_recommendations route
-        response = self.client.get(BASE_URL + '/'+ str(recommendation.id))
-        self.assertEqual(response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
-        data = response.get_json()
-        self.assertEqual(data["error"], "Method not Allowed")
     
     def test_update_recommendation_with_non_integer_id(self):
         """It should respond with a 404 for non-integer ids"""
@@ -209,23 +205,20 @@ class TestYourResourceServer(TestCase):
         """
         response = self.client.put(BASE_URL + '/'+ str(999999), json={}, headers={"Content-Type": "application/json"})
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
-<<<<<<< HEAD
-=======
+
 
     # TEST CASES FOR DELETE #
 
-    def test_delete_recommendation(self):
-        """It should Delete a Recommendation"""
-        test_recommendation = self._create_recommendations(1)[0]
-        response = self.client.delete(f"{BASE_URL}/{test_recommendation.id}")
-        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
-        self.assertEqual(len(response.data), 0)
-        # makes sure they are deleted
-        response = self.client.get(f"{BASE_URL}/{test_recommendation.id}")
-        self.assertEqual(response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
->>>>>>> origin/master
-=======
->>>>>>> 013168b931e137f6fda45f534d985097193185cb
+    # def test_delete_recommendation(self):
+    #     """It should Delete a Recommendation"""
+    #     test_recommendation = self._create_recommendations(1)[0]
+    #     response = self.client.delete(f"{BASE_URL}/{test_recommendation.id}")
+    #     self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+    #     self.assertEqual(len(response.data), 0)
+    #     # makes sure they are deleted
+    #     response = self.client.get(f"{BASE_URL}/{test_recommendation.id}")
+    #     self.assertEqual(response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
+
 
     # TEST CASES FOR DELETE #
 

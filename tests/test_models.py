@@ -122,11 +122,7 @@ class TestRecommendation(unittest.TestCase):
         self.assertIsNotNone(recommendation.id)
         recommendations = Recommendation.all()
         self.assertEqual(len(recommendations), 1)
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
 
->>>>>>> 013168b931e137f6fda45f534d985097193185cb
     # def test_update_a_recommendation(self):
     #     """It should Update a recommendation in the database"""
     #     recommendation = Recommendation(user_id=1, product_id=2, bought_in_last_30_days=True,
@@ -160,30 +156,26 @@ class TestRecommendation(unittest.TestCase):
     #     self.assertEqual(updated_recommendation.recommendation_type, new_type)
     def test_update_recommendation(self):
         """Test if a recommendation can be updated in the database"""
-        # Get the initial type
-        recommendation=Recommendation(user_id=1, product_id=2, bought_in_last_30_days=True,
-                                             recommendation_type=RecommendationType.UPSELL.name)
-        recommendation.create()
-        old_type = recommendation.recommendation_type
-
-        # Define a new type
-        new_type = RecommendationType.CROSS_SELL.name
-
-        # Update the recommendation and commit to the database
-        recommendation.recommendation_type = new_type
-        db.session.commit()
-
-        # Get the updated recommendation
-        recommendation = Recommendation.query.get(recommendation.id)
-
-        # Assert the recommendation type has been updated
-        self.assertNotEqual(recommendation.recommendation_type.name, old_type)
-        self.assertEqual(recommendation.recommendation_type.name, new_type)
-<<<<<<< HEAD
-=======
-=======
-
->>>>>>> 013168b931e137f6fda45f534d985097193185cb
+        reco = RecommendationFactory()
+        reco.update_date=date.today()
+        logging.debug(reco)
+        reco.id = None
+        reco.create()
+        logging.debug(reco)
+        self.assertIsNotNone(reco.id)
+        # Change it and save it
+        reco.recommendation_type = RecommendationType.RECOMMENDED_FOR_YOU
+        original_id = reco.id
+        reco.update()
+        self.assertEqual(reco.id, original_id)
+        self.assertEqual(reco.recommendation_type, RecommendationType.RECOMMENDED_FOR_YOU)
+        # Fetch it back and make sure the id hasn't changed
+        # but the data did change
+        recos = Recommendation.all()
+        self.assertEqual(len(recos), 1)
+        self.assertEqual(recos[0].id, original_id)
+        self.assertEqual(recos[0].recommendation_type, RecommendationType.RECOMMENDED_FOR_YOU)
+        self.assertEqual(recos[0].update_date, date.today())
 
     def test_delete_a_recommendation(self):
         """It should Delete a Recommendation"""
@@ -195,13 +187,3 @@ class TestRecommendation(unittest.TestCase):
         test_recommendation.delete()
         self.assertEqual(len(Recommendation.all()), 0)
 
-
-
-
-    
-        
-<<<<<<< HEAD
->>>>>>> origin/master
-=======
-
->>>>>>> 013168b931e137f6fda45f534d985097193185cb
