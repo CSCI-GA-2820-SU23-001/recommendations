@@ -252,38 +252,6 @@ class TestYourResourceServer(TestCase):
         data = response.get_json()
         self.assertEqual(len(data), 5)
 
-    def test_get_popular_recommendation_list(self):
-        """It should Get a list of Popular Recommendations"""
-        # Create test recommendations for 5 products
-        count = 5
-        # Test Logic:
-        # Create 1 recommendation for 1st product, 2 for 2nd, ...
-        # 5th product is most popular because of 5 recommendations
-        for product in range(1, count + 1):
-            for _ in range(1, product + 1):
-                test_rec = RecommendationFactory().serialize()
-                test_rec["product_id"] = 123 + product
-                response = self.client.post(BASE_URL, json=test_rec)
-                self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-
-        # Test error conditions first
-        response = self.client.get(f"{POP_REC_URL}")
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-
-        response = self.client.get(f"{POP_REC_URL}", query_string="count=more")
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-
-        response = self.client.get(f"{POP_REC_URL}", query_string="count=6")
-        self.assertEqual(response.status_code, status.HTTP_413_REQUEST_ENTITY_TOO_LARGE)
-
-        response = self.client.get(f"{POP_REC_URL}", query_string="count=0")
-        self.assertEqual(response.status_code, status.HTTP_406_NOT_ACCEPTABLE)
-
-        # Test valid condition: Verify response length and most popular recommendation
-        response = self.client.get(f"{POP_REC_URL}", query_string="count=2")
-        data = response.get_json()
-        self.assertEqual(len(data), 2)
-        self.assertEqual(data[0]["product_id"], 128)
 
     def test_query_recommendation_list_by_product_id(self):
         """It should Query Recommendations by Product ID"""

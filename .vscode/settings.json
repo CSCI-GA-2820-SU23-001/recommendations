@@ -32,6 +32,7 @@
         "sqlalchemy",
         "UNKOWN",
         "UPSELL"
-    ]
+    ],
+    "C_Cpp.default.configurationProvider": "ms-vscode.makefile-tools"
 }
 
