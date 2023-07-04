@@ -108,8 +108,24 @@ tests/              - test cases package
     "message": "Invalid Data Type"
 }
 ```
+### DELETE /recommendations
 
+##### Request Parameter
+DELETE /recommendations/{id}
 
+##### Headers
+- Content-Type: application/json
+
+##### Response
+- Status: 204 No Content
+
+- Status: 404 Not found
+```json
+{
+    "status": 404,
+    "error": "Not Found",
+    "message": "Does not exist"
+}
 
 ## License
 
