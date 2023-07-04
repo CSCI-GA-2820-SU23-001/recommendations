@@ -108,8 +108,16 @@ tests/              - test cases package
     "message": "Invalid Data Type"
 }
 ```
+### DELETE /recommendations
 
+##### Request Parameter
+DELETE /recommendations/{id}
 
+##### Request Body
+None
+
+##### Response
+- Status: 204 No Content
 
 ## License
 
