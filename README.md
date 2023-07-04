@@ -55,6 +55,62 @@ tests/              - test cases package
 └── test_routes.py  - test suite for service routes
 ```
 
+## REST APIs
+|Method     |  Endpoint               |  Description                        |
+|-------    |  ---------------------  |  ---------------------------------  |
+|POST       |  /recommendations       |  Creates a new recommendation       |
+|GET        |  /recommendations       |  Lists all recommendations          |
+|GET        |  /recommendations/{id}  |  Retrieves a recommendation  |
+|PUT        |  /recommendations/{id}  |  Updates a recommendation           |
+|DELETE     |  /recommendations/{id}  |  Deletes a recommendation           |
+
+### POST /recommendations
+
+
+##### Request Body
+```json
+{
+   "user_id": 1,
+   "product_id": 2,
+   "recommendation_type": "UPSELL",
+   "bought_in_last_30_days": True
+}
+```
+
+##### Headers
+- Content-Type: application/json
+
+##### Response
+- Status: 201 Created
+```json
+{
+    "id": 1,
+    "user_id": 1,
+    "product_id": 2,
+    "recommendation_type": "UPSELL",
+    "create_date": 2023-07-04,
+    "update_date": 2023-07-04,
+    "bought_in_last_30_days": True
+}
+```
+- Status: 400 Bad Request
+```json
+{
+    "status": 400,
+    "error": "Bad Request",
+    "message": "No Data Provided"
+}
+```
+```json
+{
+    "status": 400,
+    "error": "Bad Request",
+    "message": "Invalid Data Type"
+}
+```
+
+
+
 ## License
 
 Copyright (c) John Rofrano. All rights reserved.
