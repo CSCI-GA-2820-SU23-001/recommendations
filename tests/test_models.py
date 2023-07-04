@@ -8,11 +8,11 @@ import unittest
 from service.models import Recommendation, RecommendationType, DataValidationError, db
 from service import app
 from tests.factories import RecommendationFactory
-from random import choice
 from datetime import date
 DATABASE_URI = os.getenv(
     "DATABASE_URI", "postgresql://postgres:postgres@localhost:5432/testdb"
 )
+
 
 ######################################################################
 #  Recommendation   M O D E L   T E S T   C A S E S
@@ -96,7 +96,7 @@ class TestRecommendation(unittest.TestCase):
 
     def test_create_a_recommendation(self):
         """It should Create a recommendation and assert that it exists"""
-        recommendation = Recommendation(user_id=1, product_id=2, bought_in_last_30_days=True, 
+        recommendation = Recommendation(user_id=1, product_id=2, bought_in_last_30_days=True,
                                         recommendation_type=RecommendationType.UPSELL.name)
         self.assertEqual(str(recommendation), "<Recommendation id=[None]>")
         self.assertTrue(recommendation is not None)
@@ -105,7 +105,7 @@ class TestRecommendation(unittest.TestCase):
         self.assertEqual(recommendation.product_id, 2)
         self.assertEqual(recommendation.bought_in_last_30_days, True)
         self.assertEqual(recommendation.recommendation_type, RecommendationType.UPSELL.name)
-        recommendation = Recommendation(user_id=1, product_id=2, bought_in_last_30_days=False, 
+        recommendation = Recommendation(user_id=1, product_id=2, bought_in_last_30_days=False,
                                         recommendation_type=RecommendationType.UPSELL.name)
         self.assertEqual(recommendation.bought_in_last_30_days, False)
 
@@ -113,7 +113,7 @@ class TestRecommendation(unittest.TestCase):
         """It should Create a recommendation and add it to the database"""
         recommendations = Recommendation.all()
         self.assertEqual(recommendations, [])
-        recommendation = Recommendation(user_id=1, product_id=2, bought_in_last_30_days=True, 
+        recommendation = Recommendation(user_id=1, product_id=2, bought_in_last_30_days=True,
                                         recommendation_type=RecommendationType.UPSELL.name)
         self.assertTrue(recommendation is not None)
         self.assertEqual(recommendation.id, None)
@@ -157,7 +157,7 @@ class TestRecommendation(unittest.TestCase):
     def test_update_recommendation(self):
         """Test if a recommendation can be updated in the database"""
         reco = RecommendationFactory()
-        reco.update_date=date.today()
+        reco.update_date = date.today()
         logging.debug(reco)
         reco.id = None
         reco.create()

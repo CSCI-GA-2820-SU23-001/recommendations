@@ -6,7 +6,6 @@ All of the models are stored in this module
 import logging
 from datetime import date
 from enum import Enum
-from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 
 
@@ -15,14 +14,16 @@ logger = logging.getLogger("flask.app")
 # Create the SQLAlchemy object to be initialized later in init_db()
 db = SQLAlchemy()
 
+
 class RecommendationType(Enum):
     """Enumeration of valid Recommendation Types"""
     UPSELL = 0
     CROSS_SELL = 1
     FREQ_BOUGHT_TOGETHER = 2
-    RECOMMENDED_FOR_YOU =3
+    RECOMMENDED_FOR_YOU = 3
     TRENDING = 4
-    UNKOWN = 5
+    UNKNOWN = 5
+
 
 # Function to initialize the database
 def init_db(app):
@@ -45,12 +46,12 @@ class Recommendation(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, nullable=False)
     product_id = db.Column(db.Integer, nullable=False)
-    create_date= db.Column(db.Date(), nullable=False, default=date.today())
-    update_date= db.Column(db.Date(), nullable=False, default=date.today())
+    create_date = db.Column(db.Date(), nullable=False, default=date.today())
+    update_date = db.Column(db.Date(), nullable=False, default=date.today())
     bought_in_last_30_days = db.Column(db.Boolean, nullable=False, default=False)
 
     recommendation_type = db.Column(
-        db.Enum(RecommendationType), nullable=False, server_default=(RecommendationType.UNKOWN.name)
+        db.Enum(RecommendationType), nullable=False, server_default=(RecommendationType.UNKNOWN.name)
     )
 
     def __repr__(self):
@@ -81,10 +82,10 @@ class Recommendation(db.Model):
     def serialize(self):
         """ Serializes a Recommendation into a dictionary """
         return {
-            "id": self.id, 
+            "id": self.id,
             "user_id": self.user_id,
             "product_id": self.product_id,
-            "recommendation_type": self.recommendation_type.name, # create string from enum
+            "recommendation_type": self.recommendation_type.name,  # create string from enum
             "create_date": self.create_date.isoformat(),
             "update_date": self.update_date.isoformat(),
             "bought_in_last_30_days": self.bought_in_last_30_days,
@@ -100,7 +101,7 @@ class Recommendation(db.Model):
         try:
             self.user_id = data["user_id"]
             self.product_id = data["product_id"]
-            self.recommendation_type = getattr(RecommendationType, data["recommendation_type"]) # create enum from string
+            self.recommendation_type = getattr(RecommendationType, data["recommendation_type"])  # create enum from string
             self.create_date = date.fromisoformat(data["create_date"])
             self.update_date = date.fromisoformat(data["update_date"])
             self.bought_in_last_30_days = data["bought_in_last_30_days"]
@@ -160,7 +161,7 @@ class Recommendation(db.Model):
         return cls.query.filter(cls.bought_in_last_30_days == bought_in_last_30d)
 
     @classmethod
-    def find_by_recommendation_type(cls, recommendation_type: RecommendationType = RecommendationType.UNKOWN) -> list:
+    def find_by_recommendation_type(cls, recommendation_type: RecommendationType = RecommendationType.UNKNOWN) -> list:
         """ Returns all Recommendations for given Type """
         logger.info("Processing lookup for recommendation type %s ...", recommendation_type)
         return cls.query.filter(cls.recommendation_type == recommendation_type)
