@@ -98,10 +98,10 @@ def create_recommendations():
     recommendation.deserialize(request.get_json())
     recommendation.create()
     message = recommendation.serialize()
-    #location_url = url_for("recommendations", recommendation_id=recommendation.id, _external=True) ## TODO
+    location_url = url_for("get_recommendation", recommendation_id=recommendation.id, _external=True)
 
     app.logger.info("Recommendation with ID [%s] created.", recommendation.id)
-    return jsonify(message), status.HTTP_201_CREATED
+    return jsonify(message), status.HTTP_201_CREATED, {"Location": location_url}
 
 ######################################################################
 # UPDATE A NEW RECOMMENDATION TYPE
