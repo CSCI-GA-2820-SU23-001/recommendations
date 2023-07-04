@@ -22,6 +22,8 @@ DATABASE_URI = os.getenv(
 )
 BASE_URL = "/recommendations"
 POP_REC_URL = "/recommendations/popular"
+
+
 ######################################################################
 #  T E S T   C A S E S
 ######################################################################
@@ -67,9 +69,9 @@ class TestYourResourceServer(TestCase):
             recommendations.append(test_recommendation)
         return recommendations
 
-    ######################################################################
-    #  P L A C E   T E S T   C A S E S   H E R E
-    ######################################################################
+######################################################################
+#  P L A C E   T E S T   C A S E S   H E R E
+######################################################################
 
     def test_index(self):
         """ It should call the home page """
@@ -95,7 +97,6 @@ class TestYourResourceServer(TestCase):
         self.assertEqual(new_recommendation["recommendation_type"], test_recommendation.recommendation_type.name)
         self.assertEqual(date.fromisoformat(new_recommendation["create_date"]), test_recommendation.create_date)
         self.assertEqual(date.fromisoformat(new_recommendation["update_date"]), test_recommendation.update_date)
-
 
         # Check that the location header was correct
         response = self.client.get(location)
@@ -132,7 +133,7 @@ class TestYourResourceServer(TestCase):
 
 ######################################################################
     #  UPDATE   TEST   CASES
-#######################################################################
+######################################################################
 
     # def test_update_recommendation(self):
     #     """It should Update an existing Recommendation"""
@@ -185,7 +186,7 @@ class TestYourResourceServer(TestCase):
         """It should Update an existing Recommendation"""
         # create a recommendation to update
         test_reco = RecommendationFactory()
-        test_reco.update_date=date.today()
+        test_reco.update_date = date.today()
         response = self.client.post(BASE_URL, json=test_reco.serialize())
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
@@ -199,24 +200,19 @@ class TestYourResourceServer(TestCase):
         self.assertEqual(updated_reco["recommendation_type"], RecommendationType.RECOMMENDED_FOR_YOU.name)
         self.assertEqual(updated_reco["update_date"], date.today().strftime('%Y-%m-%d'))
 
-    
     def test_update_recommendation_with_non_integer_id(self):
         """It should respond with a 404 for non-integer ids"""
-        response = self.client.put(BASE_URL + '/' +"abc", json={})
+        response = self.client.put(BASE_URL + '/' + "abc", json={})
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
-
 
     def test_recommendation_not_found(self):
         """
         Test case for when a recommendation with the provided ID is not found.
         """
-        response = self.client.put(BASE_URL + '/'+ str(999999), json={}, headers={"Content-Type": "application/json"})
+        response = self.client.put(BASE_URL + '/' + str(999999), json={}, headers={"Content-Type": "application/json"})
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
-
-
     # TEST CASES FOR DELETE #
-
     def test_delete_recommendation(self):
         """It should Delete a Recommendation"""
         test_recommendation = self._create_recommendations(1)[0]
@@ -258,7 +254,6 @@ class TestYourResourceServer(TestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         data = response.get_json()
         self.assertEqual(len(data), 5)
-
 
     def test_query_recommendation_list_by_product_id(self):
         """It should Query Recommendations by Product ID"""
