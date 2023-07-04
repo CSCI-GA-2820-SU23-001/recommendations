@@ -113,8 +113,8 @@ tests/              - test cases package
 ##### Request Parameter
 DELETE /recommendations/{id}
 
-##### Headers
-- Content-Type: application/json
+##### Request Body
+None
 
 ##### Response
 - Status: 204 No Content
