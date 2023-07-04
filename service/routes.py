@@ -96,7 +96,7 @@ def create_recommendations():
     check_content_type("application/json")
     recommendation = Recommendation()
     if not request.json:
-        return jsonify({'message': 'Bad Request. No data provided'}), status.HTTP_400_BAD_REQUEST
+        return error_handlers.request_validation_error("No Data Provided")
     if not isinstance(request.json['user_id'], int):
         return error_handlers.request_validation_error("Invalid Data Type")
     recommendation.deserialize(request.get_json())
