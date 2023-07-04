@@ -83,9 +83,9 @@ class TestYourResourceServer(TestCase):
         response = self.client.post(BASE_URL, json=test_recommendation.serialize())
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
-        # TODO Make sure location header is set
-        '''location = response.headers.get("Location", None)
-        self.assertIsNotNone(location)'''
+        # Make sure location header is set
+        location = response.headers.get("Location", None)
+        self.assertIsNotNone(location)
 
         # Check the data is correct
         new_recommendation = response.get_json()
@@ -97,7 +97,14 @@ class TestYourResourceServer(TestCase):
         self.assertEqual(date.fromisoformat(new_recommendation["update_date"]), test_recommendation.update_date)
 
 
-        # TODO Check that the location header was correct
+        # Check that the location header was correct
+        response = self.client.get(location)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        new_recommendation = response.get_json()
+        self.assertEqual(new_recommendation["user_id"], test_recommendation.user_id)
+        self.assertEqual(new_recommendation["product_id"], test_recommendation.product_id)
+        self.assertEqual(new_recommendation["recommendation_type"], test_recommendation.recommendation_type.name)
+        self.assertEqual(new_recommendation["bought_in_last_30_days"], test_recommendation.bought_in_last_30_days)
 
     def test_create_recommendation_no_content_type(self):
         """It should not Create a Recommendation with no content type"""
