@@ -30,6 +30,35 @@ def index():
 ######################################################################
 
 # Place your REST API code here ...
+######################################################################
+# LIST ALL RECOMMENDATIONS (LIST)
+######################################################################
+@app.route("/recommendations", methods=["GET"])
+def list_recommendations():
+    """Returns all of the Recommendations"""
+    app.logger.info("Request for recommendation list")
+    recommendations = []
+
+    product_id = request.args.get("product_id")
+    user_id = request.args.get("user_id")
+    bought_in_last_30d = request.args.get("bought_in_last_30d")
+    recommendation_type = request.args.get("recommendation_type")
+    
+    if product_id:
+        recommendations = Recommendation.find_by_product_id(product_id)
+    elif user_id:
+        recommendations = Recommendation.find_by_user_id(user_id)
+    elif bought_in_last_30d:
+        recommendations = Recommendation.find_by_bought_in_last_30d(bought_in_last_30d)
+    elif recommendation_type:
+        recommendations = Recommendation.find_by_recommendation_type(recommendation_type)
+    else:
+        recommendations = Recommendation.all()
+
+    results = [recommendation.serialize()
+               for recommendation in recommendations]
+    app.logger.info("Returning %d recommendations", len(results))
+    return jsonify(results), status.HTTP_200_OK
 
 ######################################################################
 # RETRIEVE A RECOMMENDATION (READ)
