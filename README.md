@@ -119,14 +119,6 @@ DELETE /recommendations/{id}
 ##### Response
 - Status: 204 No Content
 
-- Status: 404 Not found
-```json
-{
-    "status": 404,
-    "error": "Not Found",
-    "message": "Does not exist"
-}
-
 ## License
 
 Copyright (c) John Rofrano. All rights reserved.
