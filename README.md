@@ -108,6 +108,57 @@ tests/              - test cases package
     "message": "Invalid Data Type"
 }
 ```
+
+### GET /recommendations
+###### Get a list of recommendations
+
+##### Headers
+- Content-Type: application/json
+
+##### Response
+- Status: 200 OK
+```json
+[
+    {
+        "id": 1,
+        "user_id": 1,
+        "product_id": 2,
+        "recommendation_type": "UPSELL",
+        "create_date": 2023-07-04,
+        "update_date": 2023-07-04,
+        "bought_in_last_30_days": True
+    }
+]
+```
+
+### GET /recommendations/{id}
+###### Get the contents of a recommendation
+
+##### Headers
+- Content-Type: application/json
+
+##### Response
+- Status: 200 OK
+```json
+{
+    "id": 1,
+    "user_id": 1,
+    "product_id": 2,
+    "recommendation_type": "UPSELL",
+    "create_date": 2023-07-04,
+    "update_date": 2023-07-04,
+    "bought_in_last_30_days": True
+}
+```
+- Status: 404 Not Found
+```json
+{
+    "status": 404,
+    "error": "Not Found",
+    "message": "recommendation with id '0' was not found."
+}
+```
+
 ### DELETE /recommendations
 
 ##### Request Parameter
