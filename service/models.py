@@ -99,12 +99,34 @@ class Recommendation(db.Model):
             data (dict): A dictionary containing the resource data
         """
         try:
-            self.user_id = data["user_id"]
-            self.product_id = data["product_id"]
-            self.recommendation_type = getattr(RecommendationType, data["recommendation_type"])  # create enum from string
-            self.create_date = date.fromisoformat(data["create_date"])
-            self.update_date = date.fromisoformat(data["update_date"])
-            self.bought_in_last_30_days = data["bought_in_last_30_days"]
+            if isinstance(data["user_id"], int):
+                self.user_id = data["user_id"]
+            else:
+                raise DataValidationError(
+                    "Invalid type for int [user_id]: "
+                    + str(type(data["user_id"]))
+                )
+            if isinstance(data["product_id"], int):
+                self.product_id = data["product_id"]
+            else:
+                raise DataValidationError(
+                    "Invalid type for int [product_id]: "
+                    + str(type(data["product_id"]))
+                )
+            if isinstance(data["recommendation_type"], str):
+                self.recommendation_type = getattr(RecommendationType, data["recommendation_type"])  # create enum from string
+            else:
+                raise DataValidationError(
+                    "Invalid type for string [recommendation_type]: "
+                    + str(type(data["recommendation_type"]))
+                )
+            if isinstance(data["bought_in_last_30_days"], bool):
+                self.bought_in_last_30_days = data["bought_in_last_30_days"]
+            else:
+                raise DataValidationError(
+                    "Invalid type for bool [bought_in_last_30_days]: "
+                    + str(type(data["bought_in_last_30_days"]))
+                )
         except KeyError as error:
             raise DataValidationError(
                 "Invalid Recommendation: missing " + error.args[0]

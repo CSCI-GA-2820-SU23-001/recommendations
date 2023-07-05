@@ -95,8 +95,8 @@ class TestYourResourceServer(TestCase):
         self.assertEqual(new_recommendation["product_id"], test_recommendation.product_id)
         self.assertEqual(new_recommendation["bought_in_last_30_days"], test_recommendation.bought_in_last_30_days)
         self.assertEqual(new_recommendation["recommendation_type"], test_recommendation.recommendation_type.name)
-        self.assertEqual(date.fromisoformat(new_recommendation["create_date"]), test_recommendation.create_date)
-        self.assertEqual(date.fromisoformat(new_recommendation["update_date"]), test_recommendation.update_date)
+        self.assertEqual(date.fromisoformat(new_recommendation["create_date"]), date.today())
+        self.assertEqual(date.fromisoformat(new_recommendation["update_date"]), date.today())
 
         # Check that the location header was correct
         response = self.client.get(location)
@@ -135,53 +135,6 @@ class TestYourResourceServer(TestCase):
     #  UPDATE   TEST   CASES
 ######################################################################
 
-    # def test_update_recommendation(self):
-    #     """It should Update an existing Recommendation"""
-    #     recommendation = Recommendation(
-    #         user_id=1, 
-    #         product_id=2, 
-    #         bought_in_last_30_days=True, 
-    #         recommendation_type=RecommendationType.UPSELL.name
-    #     )
-    #     db.session.add(recommendation)
-    #     db.session.commit()
-
-    #     current_recommendation = Recommendation.query.get(recommendation.id)
-    #     current_type = current_recommendation.recommendation_type
-       
-    #     response = self.client.put(BASE_URL + '/' +str(recommendation.id), json={})
-    #     # print(response)
-    #     self.assertEqual(response.status_code, status.HTTP_200_OK)
-
-    #     updated_recommendation = response.get_json()
-    #     self.assertNotEqual(updated_recommendation["recommendation_type"], current_type.name)
-    #     self.assertEqual(date.fromisoformat(updated_recommendation["update_date"]), date.today())
-
-    # def test_update_recommendation(self):
-    #     """ Test updating a recommendation """
-    #     recommendation = Recommendation(user_id=1, product_id=2, bought_in_last_30_days=True,
-    #                                     recommendation_type=RecommendationType.UPSELL.name)
-    #     recommendation.create()
-    #     recommendation_id = recommendation.id
-
-    #     # Define a new type
-    #     new_type = RecommendationType.CROSS_SELL.name
-
-    #     # Send PUT request with new type
-    #     response = self.client.put(
-    #         "/recommendations/{}".format(recommendation_id),
-    #         json={"recommendation_type": new_type},
-    #         content_type="application/json",
-    #     )
-
-    #     # Check the status code and the returned JSON
-    #     self.assertEqual(response.status_code, status.HTTP_200_OK)
-    #     new_json = response.get_json()
-    #     self.assertEqual(new_json["recommendation_type"], new_type)
-
-    #     # Verify that the change was made in the database
-    #     updated_recommendation = Recommendation.query.get(recommendation_id)
-    #     self.assertEqual(updated_recommendation.recommendation_type.name, new_type)
     def test_update_recommendation(self):
         """It should Update an existing Recommendation"""
         # create a recommendation to update

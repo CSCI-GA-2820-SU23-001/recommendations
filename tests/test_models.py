@@ -79,8 +79,8 @@ class TestRecommendation(unittest.TestCase):
         self.assertEqual(recommendation.user_id, data["user_id"])
         self.assertEqual(recommendation.product_id, data["product_id"])
         self.assertEqual(recommendation.bought_in_last_30_days, data["bought_in_last_30_days"])
-        self.assertEqual(recommendation.create_date, date.fromisoformat(data["create_date"]))
-        self.assertEqual(recommendation.update_date, date.fromisoformat(data["update_date"]))
+        self.assertEqual(recommendation.create_date, None)
+        self.assertEqual(recommendation.update_date, None)
 
     def test_deserialize_missing_data(self):
         """It should not deserialize a Recommendation with missing data"""
@@ -93,6 +93,35 @@ class TestRecommendation(unittest.TestCase):
         data = "this is not a dictionary"
         recommendation = Recommendation()
         self.assertRaises(DataValidationError, recommendation.deserialize, data)
+    
+    def test_deserialize_wrong_user_id_data_type(self):
+        """It should not de-serialize a Recommendation with wrong user_id data type"""
+        data = RecommendationFactory().serialize()
+        data["user_id"] = str(data["user_id"])
+        recommendation = Recommendation()
+        self.assertRaises(DataValidationError, recommendation.deserialize, data)
+
+    def test_deserialize_wrong_product_id_data_type(self):
+        """It should not de-serialize a Recommendation with wrong product_id data type"""
+        data = RecommendationFactory().serialize()
+        data["product_id"] = str(data["product_id"])
+        recommendation = Recommendation()
+        self.assertRaises(DataValidationError, recommendation.deserialize, data)
+
+    def test_deserialize_wrong_bought_in_last_30_days_data_type(self):
+        """It should not de-serialize a Recommendation with wrong bought_in_last_30_days data type"""
+        data = RecommendationFactory().serialize()
+        data["bought_in_last_30_days"] = "True"
+        recommendation = Recommendation()
+        self.assertRaises(DataValidationError, recommendation.deserialize, data)
+    
+    def test_deserialize_wrong_recommendation_type_data_type(self):
+        """It should not de-serialize a Recommendation with wrong recommendation_type data type"""
+        data = RecommendationFactory().serialize()
+        data["recommendation_type"] = 2
+        recommendation = Recommendation()
+        self.assertRaises(DataValidationError, recommendation.deserialize, data)
+
 
     def test_create_a_recommendation(self):
         """It should Create a recommendation and assert that it exists"""
@@ -123,37 +152,6 @@ class TestRecommendation(unittest.TestCase):
         recommendations = Recommendation.all()
         self.assertEqual(len(recommendations), 1)
 
-    # def test_update_a_recommendation(self):
-    #     """It should Update a recommendation in the database"""
-    #     recommendation = Recommendation(user_id=1, product_id=2, bought_in_last_30_days=True,
-    #                                     recommendation_type=RecommendationType.UPSELL.name)
-    #     recommendation.create()
-
-    #     # Assert that it was assigned an id and shows up in the database
-    #     self.assertIsNotNone(recommendation.id)
-
-    #     original_id = recommendation.id
-    #     original_type = recommendation.recommendation_type
-
-    #     # Define the possible recommendation types
-    #     possible_types = [RecommendationType.UPSELL, RecommendationType.CROSS_SELL,
-    #                     RecommendationType.FREQ_BOUGHT_TOGETHER, RecommendationType.RECOMMENDED_FOR_YOU, RecommendationType.TRENDING]
-
-    #     # Remove the current type from the possible types
-    #     possible_types.remove(original_type)
-
-    #     # Randomly select a new type
-    #     new_type = choice(possible_types)
-
-    #     # Update the recommendation
-    #     recommendation.recommendation_type = new_type
-    #     recommendation.update()
-
-    #     updated_recommendation = Recommendation.find(original_id)
-
-    #     self.assertEqual(updated_recommendation.id, original_id)
-    #     self.assertNotEqual(updated_recommendation.recommendation_type, original_type)
-    #     self.assertEqual(updated_recommendation.recommendation_type, new_type)
     def test_update_recommendation(self):
         """Test if a recommendation can be updated in the database"""
         reco = RecommendationFactory()
