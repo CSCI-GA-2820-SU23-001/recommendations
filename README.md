@@ -158,7 +158,19 @@ tests/              - test cases package
     "message": "recommendation with id '0' was not found."
 }
 ```
-
+### Update /recommendations{id}
+##### Headers
+- Content-Type: application/json
+##### Request Body
+```json
+{
+    "recommendation_type": "RECOMMENDED_FOR_YOU",
+    "update_date": "2023-07-05",
+}
+```
+##### Response
+- Status: 200 OK
+- Status: 404 NOT FOUND
 ### DELETE /recommendations
 
 ##### Request Parameter
