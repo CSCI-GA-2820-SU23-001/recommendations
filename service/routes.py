@@ -126,12 +126,17 @@ def update_recommendations(recommendation_id):
     recommendation = Recommendation.find(recommendation_id)
     # recommendation = Recommendation.query.get(recommendation_id)
     if not recommendation:
-        abort(status.HTTP_404_NOT_FOUND)
-    
+        abort(status.HTTP_404_NOT_FOUND,
+              f"recommendation with id '{recommendation_id}' was not found.")
+
+    # Get the original create date, so that it doesn't get updated
+    create_date = recommendation.serialize()["create_date"]
+
     # Deserialize the incoming request's JSON data into the recommendation
     recommendation.deserialize(request.get_json())
     recommendation.id = recommendation_id
     recommendation.update_date = date.today()
+    recommendation.create_date = create_date
     recommendation.update()
     app.logger.info("Recommendation with ID [%s] updated.", recommendation.id)
     return jsonify(recommendation.serialize()), status.HTTP_200_OK

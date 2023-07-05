@@ -158,19 +158,39 @@ tests/              - test cases package
     "message": "recommendation with id '0' was not found."
 }
 ```
-### Update /recommendations{id}
+### Update /recommendations/{id}
 ##### Headers
 - Content-Type: application/json
 ##### Request Body
 ```json
 {
+    "user_id": 1,
+    "product_id": 2,
     "recommendation_type": "RECOMMENDED_FOR_YOU",
-    "update_date": "2023-07-05",
+    "bought_in_last_30_days": False
 }
 ```
 ##### Response
 - Status: 200 OK
+```json
+{
+    "id": 1,
+    "user_id": 1,
+    "product_id": 2,
+    "recommendation_type": "RECOMMENDED_FOR_YOU",
+    "create_date": 2023-07-04,
+    "update_date": 2023-07-05,
+    "bought_in_last_30_days": False
+}
+```
 - Status: 404 NOT FOUND
+```json
+{
+    "status": 404,
+    "error": "Not Found",
+    "message": "recommendation with id '0' was not found."
+}
+```
 ### DELETE /recommendations
 
 ##### Request Parameter
