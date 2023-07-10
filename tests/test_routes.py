@@ -7,17 +7,11 @@ Test cases can be run with the following:
 """
 import os
 import logging
-from logging import Formatter
+# from logging import Formatter
 from unittest import TestCase
-from unittest.mock import MagicMock, patch
+# from unittest.mock import MagicMock, patch
 from service import app
-from service.models import (
-    Recommendation,
-    RecommendationType,
-    DataValidationError,
-    db,
-    init_db,
-)
+from service.models import Recommendation, RecommendationType, db, init_db
 from service.common import status  # HTTP Status Codes
 from tests.factories import RecommendationFactory
 from datetime import date

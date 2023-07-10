@@ -23,14 +23,10 @@ class RecommendationFactory(factory.Factory):
     create_date = FuzzyDate(date(2023, 1, 1))
     update_date = FuzzyDate(date(2023, 1, 1))
     bought_in_last_30_days = FuzzyChoice(choices=[True, False])
-    recommendation_type = FuzzyChoice(
-        choices=[
-            RecommendationType.UPSELL,
-            RecommendationType.CROSS_SELL,
-            RecommendationType.FREQ_BOUGHT_TOGETHER,
-            RecommendationType.RECOMMENDED_FOR_YOU,
-            RecommendationType.TRENDING,
-            RecommendationType.UNKNOWN,
-        ]
-    )
-    rating = FuzzyChoice(choices=[1, 2, 3, 4, 5])
+    recommendation_type = FuzzyChoice(choices=[RecommendationType.UPSELL, RecommendationType.CROSS_SELL,
+                                               RecommendationType.FREQ_BOUGHT_TOGETHER, RecommendationType.RECOMMENDED_FOR_YOU,
+                                               RecommendationType.TRENDING, RecommendationType.UNKNOWN])
+
+    rating=FuzzyChoice(choices=[1,2,3,4,5])
+    
+

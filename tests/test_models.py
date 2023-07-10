@@ -136,12 +136,14 @@ class TestRecommendation(unittest.TestCase):
         recommendation = Recommendation()
         self.assertRaises(DataValidationError, recommendation.deserialize, data)
 
+
     def test_deserialize_wrong_rating_data_type(self):
         """It should not de-serialize a Recommendation with wrong rating data type"""
         data = RecommendationFactory().serialize()
         data["rating"] = str(data["rating"])
         recommendation = Recommendation()
         self.assertRaises(DataValidationError, recommendation.deserialize, data)
+
 
     def test_create_a_recommendation(self):
         """It should Create a recommendation and assert that it exists"""

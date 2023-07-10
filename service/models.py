@@ -211,8 +211,10 @@ class Recommendation(db.Model):
         )
         return cls.query.filter(cls.recommendation_type == recommendation_type)
 
+    
     # @classmethod
     # def find_by_rating(cls, by_rating: int) -> list:
     #     """ Returns all Recommendations for given rating value """
     #     logger.info("Processing lookup for rating %s ...", by_rating)
     #     return cls.query.filter(cls.rating == by_rating)
+
