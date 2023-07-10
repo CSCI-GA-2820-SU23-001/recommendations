@@ -121,7 +121,7 @@ def update_recommendations(recommendation_id):
     """
     app.logger.info("Request to update recommendation with id: %s", recommendation_id)
     check_content_type("application/json")
-    
+
     # Get the recommendation from the database
     recommendation = Recommendation.find(recommendation_id)
     # recommendation = Recommendation.query.get(recommendation_id)
@@ -152,7 +152,7 @@ def delete_recommendation(recommendation_id):
     recommendation_id = Recommendation.find(recommendation_id)
     if recommendation_id:
         recommendation_id.delete()
-          
+
     app.logger.info("Recommendation with ID %s delete complete.", recommendation_id)
     return "", status.HTTP_204_NO_CONTENT
 
@@ -177,6 +177,3 @@ def check_content_type(content_type):
         status.HTTP_415_UNSUPPORTED_MEDIA_TYPE,
         f"Content-Type must be {content_type}",
     )
-
-
-    

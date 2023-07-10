@@ -175,7 +175,7 @@ class Recommendation(db.Model):
         """ Returns all Recommendations for given Product ID """
         logger.info("Processing lookup for product id %s ...", by_id)
         return cls.query.filter(cls.product_id == by_id)
-    
+
     @classmethod
     def find_by_bought_in_last_30d(cls, bought_in_last_30d: bool = True) -> list:
         """ Returns all Recommendations bought in last 30d """
