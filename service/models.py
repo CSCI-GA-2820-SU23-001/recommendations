@@ -210,4 +210,3 @@ class Recommendation(db.Model):
             "Processing lookup for recommendation type %s ...", recommendation_type
         )
         return cls.query.filter(cls.recommendation_type == recommendation_type)
-
