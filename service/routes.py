@@ -18,7 +18,7 @@ from . import app
 ######################################################################
 @app.route("/")
 def index():
-    """ Root URL response """
+    """Root URL response"""
     return (
         jsonify(
             name="Recommendation REST API Service",
@@ -32,6 +32,7 @@ def index():
 ######################################################################
 #  R E S T   A P I   E N D P O I N T S
 ######################################################################
+
 
 # Place your REST API code here ...
 ######################################################################
@@ -55,12 +56,13 @@ def list_recommendations():
     elif bought_in_last_30d:
         recommendations = Recommendation.find_by_bought_in_last_30d(bought_in_last_30d)
     elif recommendation_type:
-        recommendations = Recommendation.find_by_recommendation_type(recommendation_type)
+        recommendations = Recommendation.find_by_recommendation_type(
+            recommendation_type
+        )
     else:
         recommendations = Recommendation.all()
 
-    results = [recommendation.serialize()
-               for recommendation in recommendations]
+    results = [recommendation.serialize() for recommendation in recommendations]
     app.logger.info("Returning %d recommendations", len(results))
     return jsonify(results), status.HTTP_200_OK
 
@@ -77,11 +79,12 @@ def get_recommendation(recommendation_id):
     app.logger.info("Request for recommendation with id: %s", recommendation_id)
     recommendation = Recommendation.find(recommendation_id)
     if not recommendation:
-        abort(status.HTTP_404_NOT_FOUND,
-              f"recommendation with id '{recommendation_id}' was not found.")
+        abort(
+            status.HTTP_404_NOT_FOUND,
+            f"recommendation with id '{recommendation_id}' was not found.",
+        )
 
-    app.logger.info("Returning recommendation: %s",
-                    recommendation.user_id)
+    app.logger.info("Returning recommendation: %s", recommendation.user_id)
     return jsonify(recommendation.serialize()), status.HTTP_200_OK
 
 
@@ -99,12 +102,14 @@ def create_recommendations():
     recommendation = Recommendation()
     if not request.json:
         return error_handlers.request_validation_error("No Data Provided")
-    if not isinstance(request.json['user_id'], int):
+    if not isinstance(request.json["user_id"], int):
         return error_handlers.request_validation_error("Invalid Data Type")
     recommendation.deserialize(request.get_json())
     recommendation.create()
     message = recommendation.serialize()
-    location_url = url_for("get_recommendation", recommendation_id=recommendation.id, _external=True)
+    location_url = url_for(
+        "get_recommendation", recommendation_id=recommendation.id, _external=True
+    )
 
     app.logger.info("Recommendation with ID [%s] created.", recommendation.id)
     return jsonify(message), status.HTTP_201_CREATED, {"Location": location_url}
@@ -121,21 +126,25 @@ def update_recommendations(recommendation_id):
     """
     app.logger.info("Request to update recommendation with id: %s", recommendation_id)
     check_content_type("application/json")
-    
+
     # Get the recommendation from the database
     recommendation = Recommendation.find(recommendation_id)
     # recommendation = Recommendation.query.get(recommendation_id)
     if not recommendation:
-        abort(status.HTTP_404_NOT_FOUND,
-              f"recommendation with id '{recommendation_id}' was not found.")
+        abort(
+            status.HTTP_404_NOT_FOUND,
+            f"recommendation with id '{recommendation_id}' was not found.",
+        )
     # Get the original create date, so that it doesn't get updated
     create_date = recommendation.serialize()["create_date"]
 
     # Deserialize the incoming request's JSON data into the recommendation
     recommendation.deserialize(request.get_json())
-    if recommendation.rating>5 or recommendation.rating<1:
-        abort(status.HTTP_400_BAD_REQUEST,
-              f"recommendation with rating '{recommendation.rating}' was not acceptable.")
+    if recommendation.rating > 5 or recommendation.rating < 1:
+        abort(
+            status.HTTP_400_BAD_REQUEST,
+            f"recommendation with rating '{recommendation.rating}' was not acceptable.",
+        )
     # recommendation.id = recommendation_id
     recommendation.update_date = date.today()
     recommendation.create_date = create_date
@@ -149,15 +158,13 @@ def update_recommendations(recommendation_id):
 ######################################################################
 @app.route("/recommendations/<int:recommendation_id>", methods=["DELETE"])
 def delete_recommendation(recommendation_id):
-    '''This endpoint will delete a Recommendation with the specified id'''
+    """This endpoint will delete a Recommendation with the specified id"""
     app.logger.info("Request to delete a recommendation_id %s", recommendation_id)
     recommendation_id = Recommendation.find(recommendation_id)
     if recommendation_id:
         recommendation_id.delete()
-          
     app.logger.info("Recommendation with ID %s delete complete.", recommendation_id)
     return "", status.HTTP_204_NO_CONTENT
-
 
 
 ######################################################################
@@ -180,5 +187,3 @@ def check_content_type(content_type):
         status.HTTP_415_UNSUPPORTED_MEDIA_TYPE,
         f"Content-Type must be {content_type}",
     )
-
-

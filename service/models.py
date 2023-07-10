@@ -17,6 +17,7 @@ db = SQLAlchemy()
 
 class RecommendationType(Enum):
     """Enumeration of valid Recommendation Types"""
+
     UPSELL = 0
     CROSS_SELL = 1
     FREQ_BOUGHT_TOGETHER = 2
@@ -27,12 +28,12 @@ class RecommendationType(Enum):
 
 # Function to initialize the database
 def init_db(app):
-    """ Initializes the SQLAlchemy app """
+    """Initializes the SQLAlchemy app"""
     Recommendation.init_db(app)
 
 
 class DataValidationError(Exception):
-    """ Used for an data validation errors when deserializing """
+    """Used for an data validation errors when deserializing"""
 
 
 class Recommendation(db.Model):
@@ -49,10 +50,17 @@ class Recommendation(db.Model):
     create_date = db.Column(db.Date(), nullable=False, default=date.today())
     update_date = db.Column(db.Date(), nullable=False, default=date.today())
     bought_in_last_30_days = db.Column(db.Boolean, nullable=False, default=False)
-    rating=db.Column(db.Integer,CheckConstraint('rating>=1 AND rating<=5', name='rating_check'),nullable=False,default=1)
+    rating = db.Column(
+        db.Integer,
+        CheckConstraint("rating>=1 AND rating<=5", name="rating_check"),
+        nullable=False,
+        default=1,
+    )
 
     recommendation_type = db.Column(
-        db.Enum(RecommendationType), nullable=False, server_default=(RecommendationType.UNKNOWN.name)
+        db.Enum(RecommendationType),
+        nullable=False,
+        server_default=(RecommendationType.UNKNOWN.name),
     )
 
     def __repr__(self):
@@ -75,13 +83,13 @@ class Recommendation(db.Model):
         db.session.commit()
 
     def delete(self):
-        """ Removes a Recommendation from the data store """
+        """Removes a Recommendation from the data store"""
         logger.info("Deleting %s", self.id)
         db.session.delete(self)
         db.session.commit()
 
     def serialize(self):
-        """ Serializes a Recommendation into a dictionary """
+        """Serializes a Recommendation into a dictionary"""
         return {
             "id": self.id,
             "user_id": self.user_id,
@@ -90,8 +98,8 @@ class Recommendation(db.Model):
             "create_date": self.create_date.isoformat(),
             "update_date": self.update_date.isoformat(),
             "bought_in_last_30_days": self.bought_in_last_30_days,
-            "rating":self.rating,
-            }
+            "rating": self.rating,
+        }
 
     def deserialize(self, data):
         """
@@ -105,8 +113,7 @@ class Recommendation(db.Model):
                 self.user_id = data["user_id"]
             else:
                 raise DataValidationError(
-                    "Invalid type for int [user_id]: "
-                    + str(type(data["user_id"]))
+                    "Invalid type for int [user_id]: " + str(type(data["user_id"]))
                 )
             if isinstance(data["product_id"], int):
                 self.product_id = data["product_id"]
@@ -116,7 +123,9 @@ class Recommendation(db.Model):
                     + str(type(data["product_id"]))
                 )
             if isinstance(data["recommendation_type"], str):
-                self.recommendation_type = getattr(RecommendationType, data["recommendation_type"])  # create enum from string
+                self.recommendation_type = getattr(
+                    RecommendationType, data["recommendation_type"]
+                )  # create enum from string
             else:
                 raise DataValidationError(
                     "Invalid type for string [recommendation_type]: "
@@ -133,8 +142,7 @@ class Recommendation(db.Model):
                 self.rating = data["rating"]
             else:
                 raise DataValidationError(
-                    "Invalid type for int [rating]: "
-                    + str(type(data["rating"]))
+                    "Invalid type for int [rating]: " + str(type(data["rating"]))
                 )
         except KeyError as error:
             raise DataValidationError(
@@ -149,7 +157,7 @@ class Recommendation(db.Model):
 
     @classmethod
     def init_db(cls, app):
-        """ Initializes the database session """
+        """Initializes the database session"""
         logger.info("Initializing database")
         cls.app = app
         # This is where we initialize SQLAlchemy from the Flask app
@@ -159,13 +167,13 @@ class Recommendation(db.Model):
 
     @classmethod
     def all(cls):
-        """ Returns all of the Recommendations in the database """
+        """Returns all of the Recommendations in the database"""
         logger.info("Processing all Recommendations")
         return cls.query.all()
 
     @classmethod
     def find(cls, by_id):
-        """ Finds a Recommendation by it's ID """
+        """Finds a Recommendation by it's ID"""
         logger.info("Processing lookup for id %s ...", by_id)
         return cls.query.get(by_id)
 
@@ -181,22 +189,28 @@ class Recommendation(db.Model):
 
     @classmethod
     def find_by_product_id(cls, by_id: int) -> list:
-        """ Returns all Recommendations for given Product ID """
+        """Returns all Recommendations for given Product ID"""
         logger.info("Processing lookup for product id %s ...", by_id)
         return cls.query.filter(cls.product_id == by_id)
-    
+
     @classmethod
     def find_by_bought_in_last_30d(cls, bought_in_last_30d: bool = True) -> list:
-        """ Returns all Recommendations bought in last 30d """
-        logger.info("Processing bought_in_last30d lookup for %s ...", bought_in_last_30d)
+        """Returns all Recommendations bought in last 30d"""
+        logger.info(
+            "Processing bought_in_last30d lookup for %s ...", bought_in_last_30d
+        )
         return cls.query.filter(cls.bought_in_last_30_days == bought_in_last_30d)
 
     @classmethod
-    def find_by_recommendation_type(cls, recommendation_type: RecommendationType = RecommendationType.UNKNOWN) -> list:
-        """ Returns all Recommendations for given Type """
-        logger.info("Processing lookup for recommendation type %s ...", recommendation_type)
+    def find_by_recommendation_type(
+        cls, recommendation_type: RecommendationType = RecommendationType.UNKNOWN
+    ) -> list:
+        """Returns all Recommendations for given Type"""
+        logger.info(
+            "Processing lookup for recommendation type %s ...", recommendation_type
+        )
         return cls.query.filter(cls.recommendation_type == recommendation_type)
-    
+
     # @classmethod
     # def find_by_rating(cls, by_rating: int) -> list:
     #     """ Returns all Recommendations for given rating value """

@@ -9,6 +9,7 @@ from service.models import Recommendation, RecommendationType, DataValidationErr
 from service import app
 from tests.factories import RecommendationFactory
 from datetime import date
+
 DATABASE_URI = os.getenv(
     "DATABASE_URI", "postgresql://postgres:postgres@localhost:5432/testdb"
 )
@@ -18,7 +19,7 @@ DATABASE_URI = os.getenv(
 #  Recommendation   M O D E L   T E S T   C A S E S
 ######################################################################
 class TestRecommendation(unittest.TestCase):
-    """ Test Cases for Recommendation Model """
+    """Test Cases for Recommendation Model"""
 
     @classmethod
     def setUpClass(cls):
@@ -48,9 +49,9 @@ class TestRecommendation(unittest.TestCase):
     ######################################################################
 
     def test_example_replace_this(self):
-        """ It should always be true """
+        """It should always be true"""
         self.assertTrue(True)
-    
+
     def test_serialize_a_recommendation(self):
         """It should serialize a Recommendation"""
         recommendation = RecommendationFactory()
@@ -63,13 +64,21 @@ class TestRecommendation(unittest.TestCase):
         self.assertIn("product_id", data)
         self.assertEqual(data["product_id"], recommendation.product_id)
         self.assertIn("recommendation_type", data)
-        self.assertEqual(data["recommendation_type"], recommendation.recommendation_type.name)
+        self.assertEqual(
+            data["recommendation_type"], recommendation.recommendation_type.name
+        )
         self.assertIn("bought_in_last_30_days", data)
-        self.assertEqual(data["bought_in_last_30_days"], recommendation.bought_in_last_30_days)
-        self.assertIn("rating",data)
-        self.assertEqual(data["rating"],recommendation.rating)
-        self.assertEqual(date.fromisoformat(data["create_date"]), recommendation.create_date)
-        self.assertEqual(date.fromisoformat(data["update_date"]), recommendation.update_date)
+        self.assertEqual(
+            data["bought_in_last_30_days"], recommendation.bought_in_last_30_days
+        )
+        self.assertIn("rating", data)
+        self.assertEqual(data["rating"], recommendation.rating)
+        self.assertEqual(
+            date.fromisoformat(data["create_date"]), recommendation.create_date
+        )
+        self.assertEqual(
+            date.fromisoformat(data["update_date"]), recommendation.update_date
+        )
 
     def test_deserialize_a_recommendation(self):
         """It should de-serialize a Recommendation"""
@@ -80,8 +89,10 @@ class TestRecommendation(unittest.TestCase):
         self.assertEqual(recommendation.id, None)
         self.assertEqual(recommendation.user_id, data["user_id"])
         self.assertEqual(recommendation.product_id, data["product_id"])
-        self.assertEqual(recommendation.bought_in_last_30_days, data["bought_in_last_30_days"])
-        self.assertEqual(recommendation.rating,data["rating"])
+        self.assertEqual(
+            recommendation.bought_in_last_30_days, data["bought_in_last_30_days"]
+        )
+        self.assertEqual(recommendation.rating, data["rating"])
         self.assertEqual(recommendation.create_date, None)
         self.assertEqual(recommendation.update_date, None)
 
@@ -96,7 +107,7 @@ class TestRecommendation(unittest.TestCase):
         data = "this is not a dictionary"
         recommendation = Recommendation()
         self.assertRaises(DataValidationError, recommendation.deserialize, data)
-    
+
     def test_deserialize_wrong_user_id_data_type(self):
         """It should not de-serialize a Recommendation with wrong user_id data type"""
         data = RecommendationFactory().serialize()
@@ -117,7 +128,7 @@ class TestRecommendation(unittest.TestCase):
         data["bought_in_last_30_days"] = "True"
         recommendation = Recommendation()
         self.assertRaises(DataValidationError, recommendation.deserialize, data)
-    
+
     def test_deserialize_wrong_recommendation_type_data_type(self):
         """It should not de-serialize a Recommendation with wrong recommendation_type data type"""
         data = RecommendationFactory().serialize()
@@ -134,25 +145,39 @@ class TestRecommendation(unittest.TestCase):
 
     def test_create_a_recommendation(self):
         """It should Create a recommendation and assert that it exists"""
-        recommendation = Recommendation(user_id=1, product_id=2, bought_in_last_30_days=True,
-                                        recommendation_type=RecommendationType.UPSELL.name)
+        recommendation = Recommendation(
+            user_id=1,
+            product_id=2,
+            bought_in_last_30_days=True,
+            recommendation_type=RecommendationType.UPSELL.name,
+        )
         self.assertEqual(str(recommendation), "<Recommendation id=[None]>")
         self.assertTrue(recommendation is not None)
         self.assertEqual(recommendation.id, None)
         self.assertEqual(recommendation.user_id, 1)
         self.assertEqual(recommendation.product_id, 2)
         self.assertEqual(recommendation.bought_in_last_30_days, True)
-        self.assertEqual(recommendation.recommendation_type, RecommendationType.UPSELL.name)
-        recommendation = Recommendation(user_id=1, product_id=2, bought_in_last_30_days=False,
-                                        recommendation_type=RecommendationType.UPSELL.name)
+        self.assertEqual(
+            recommendation.recommendation_type, RecommendationType.UPSELL.name
+        )
+        recommendation = Recommendation(
+            user_id=1,
+            product_id=2,
+            bought_in_last_30_days=False,
+            recommendation_type=RecommendationType.UPSELL.name,
+        )
         self.assertEqual(recommendation.bought_in_last_30_days, False)
 
     def test_add_a_recommendation(self):
         """It should Create a recommendation and add it to the database"""
         recommendations = Recommendation.all()
         self.assertEqual(recommendations, [])
-        recommendation = Recommendation(user_id=1, product_id=2, bought_in_last_30_days=True,
-                                        recommendation_type=RecommendationType.UPSELL.name)
+        recommendation = Recommendation(
+            user_id=1,
+            product_id=2,
+            bought_in_last_30_days=True,
+            recommendation_type=RecommendationType.UPSELL.name,
+        )
         self.assertTrue(recommendation is not None)
         self.assertEqual(recommendation.id, None)
         recommendation.create()
@@ -175,13 +200,17 @@ class TestRecommendation(unittest.TestCase):
         original_id = reco.id
         reco.update()
         self.assertEqual(reco.id, original_id)
-        self.assertEqual(reco.recommendation_type, RecommendationType.RECOMMENDED_FOR_YOU)
+        self.assertEqual(
+            reco.recommendation_type, RecommendationType.RECOMMENDED_FOR_YOU
+        )
         # Fetch it back and make sure the id hasn't changed
         # but the data did change
         recos = Recommendation.all()
         self.assertEqual(len(recos), 1)
         self.assertEqual(recos[0].id, original_id)
-        self.assertEqual(recos[0].recommendation_type, RecommendationType.RECOMMENDED_FOR_YOU)
+        self.assertEqual(
+            recos[0].recommendation_type, RecommendationType.RECOMMENDED_FOR_YOU
+        )
         self.assertEqual(recos[0].update_date, date.today())
         self.assertEqual(recos[0].rating, reco.rating)
 
@@ -190,8 +219,7 @@ class TestRecommendation(unittest.TestCase):
         test_recommendation = RecommendationFactory()
         test_recommendation.create()
         self.assertEqual(len(Recommendation.all()), 1)
-        
+
         # delete the recommendation and make sure it isn't in the database
         test_recommendation.delete()
         self.assertEqual(len(Recommendation.all()), 0)
-
