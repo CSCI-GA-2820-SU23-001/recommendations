@@ -7,8 +7,10 @@ Test cases can be run with the following:
 """
 import os
 import logging
+
 # from logging import Formatter
 from unittest import TestCase
+
 # from unittest.mock import MagicMock, patch
 from service import app
 from service.models import Recommendation, RecommendationType, db, init_db
@@ -190,7 +192,6 @@ class TestYourResourceServer(TestCase):
         recommendation_id = response.get_json()[
             "id"
         ]  # replace with actual recommendation id
-        print(recommendation_id)
         invalid_data = {
             "user_id": 1,
             "product_id": 2,
