@@ -50,7 +50,7 @@ class TestRecommendation(unittest.TestCase):
     def test_example_replace_this(self):
         """ It should always be true """
         self.assertTrue(True)
-    
+
     def test_serialize_a_recommendation(self):
         """It should serialize a Recommendation"""
         recommendation = RecommendationFactory()
@@ -96,7 +96,7 @@ class TestRecommendation(unittest.TestCase):
         data = "this is not a dictionary"
         recommendation = Recommendation()
         self.assertRaises(DataValidationError, recommendation.deserialize, data)
-    
+
     def test_deserialize_wrong_user_id_data_type(self):
         """It should not de-serialize a Recommendation with wrong user_id data type"""
         data = RecommendationFactory().serialize()
@@ -117,7 +117,7 @@ class TestRecommendation(unittest.TestCase):
         data["bought_in_last_30_days"] = "True"
         recommendation = Recommendation()
         self.assertRaises(DataValidationError, recommendation.deserialize, data)
-    
+
     def test_deserialize_wrong_recommendation_type_data_type(self):
         """It should not de-serialize a Recommendation with wrong recommendation_type data type"""
         data = RecommendationFactory().serialize()
@@ -125,12 +125,14 @@ class TestRecommendation(unittest.TestCase):
         recommendation = Recommendation()
         self.assertRaises(DataValidationError, recommendation.deserialize, data)
 
+
     def test_deserialize_wrong_rating_data_type(self):
         """It should not de-serialize a Recommendation with wrong rating data type"""
         data = RecommendationFactory().serialize()
         data["rating"] = str(data["rating"])
         recommendation = Recommendation()
         self.assertRaises(DataValidationError, recommendation.deserialize, data)
+
 
     def test_create_a_recommendation(self):
         """It should Create a recommendation and assert that it exists"""
@@ -190,8 +192,7 @@ class TestRecommendation(unittest.TestCase):
         test_recommendation = RecommendationFactory()
         test_recommendation.create()
         self.assertEqual(len(Recommendation.all()), 1)
-        
+
         # delete the recommendation and make sure it isn't in the database
         test_recommendation.delete()
         self.assertEqual(len(Recommendation.all()), 0)
-

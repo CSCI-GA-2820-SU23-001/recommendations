@@ -7,11 +7,11 @@ Test cases can be run with the following:
 """
 import os
 import logging
-from logging import Formatter
+# from logging import Formatter
 from unittest import TestCase
-from unittest.mock import MagicMock, patch
+# from unittest.mock import MagicMock, patch
 from service import app
-from service.models import Recommendation, RecommendationType, DataValidationError, db, init_db
+from service.models import Recommendation, RecommendationType, db, init_db
 from service.common import status  # HTTP Status Codes
 from tests.factories import RecommendationFactory
 from datetime import date
@@ -54,7 +54,7 @@ class TestYourResourceServer(TestCase):
     def tearDown(self):
         """ This runs after each test """
         db.session.remove()
-    
+
     def _create_recommendations(self, count):
         """Factory method to create recommendations in bulk"""
         recommendations = []
@@ -111,7 +111,7 @@ class TestYourResourceServer(TestCase):
         """It should not Create a Recommendation with no content type"""
         response = self.client.post(BASE_URL)
         self.assertEqual(response.status_code, status.HTTP_415_UNSUPPORTED_MEDIA_TYPE)
-    
+
     def test_create_recommendation_wrong_content_type(self):
         """It should not Create a Recommendation with the wrong content type"""
         response = self.client.post(BASE_URL, data="hello", content_type="text/html")
@@ -121,7 +121,7 @@ class TestYourResourceServer(TestCase):
         """It should not Create a Recommendation with missing data"""
         response = self.client.post(BASE_URL, content_type="application/json", json={})
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-    
+
     def test_create_recommendation_wrong_user_id(self):
         """It should not Create a Recommendation with wrong user id"""
         test_recommendation = RecommendationFactory()
