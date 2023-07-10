@@ -169,6 +169,7 @@ tests/              - test cases package
     "product_id": 2,
     "recommendation_type": "RECOMMENDED_FOR_YOU",
     "bought_in_last_30_days": False
+    "rating": 5
 }
 ```
 ##### Response
@@ -182,6 +183,7 @@ tests/              - test cases package
     "create_date": 2023-07-04,
     "update_date": 2023-07-05,
     "bought_in_last_30_days": False
+    "rating":5
 }
 ```
 - Status: 404 NOT FOUND
@@ -190,6 +192,14 @@ tests/              - test cases package
     "status": 404,
     "error": "Not Found",
     "message": "recommendation with id '0' was not found."
+}
+```
+- Status: 400 BAD REQUEST
+```json
+{
+    "status": 400,
+    "error": "Bad Request",
+    "message": "recommendation with rating '6' was not acceptable."
 }
 ```
 ### DELETE /recommendations
