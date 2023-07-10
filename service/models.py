@@ -7,7 +7,7 @@ import logging
 from datetime import date
 from enum import Enum
 from flask_sqlalchemy import SQLAlchemy
-
+from sqlalchemy import CheckConstraint
 
 logger = logging.getLogger("flask.app")
 
@@ -49,6 +49,7 @@ class Recommendation(db.Model):
     create_date = db.Column(db.Date(), nullable=False, default=date.today())
     update_date = db.Column(db.Date(), nullable=False, default=date.today())
     bought_in_last_30_days = db.Column(db.Boolean, nullable=False, default=False)
+    rating=db.Column(db.Integer,CheckConstraint('rating>=1 AND rating<=5', name='rating_check'),nullable=False,default=1)
 
     recommendation_type = db.Column(
         db.Enum(RecommendationType), nullable=False, server_default=(RecommendationType.UNKNOWN.name)
@@ -89,6 +90,7 @@ class Recommendation(db.Model):
             "create_date": self.create_date.isoformat(),
             "update_date": self.update_date.isoformat(),
             "bought_in_last_30_days": self.bought_in_last_30_days,
+            "rating":self.rating,
             }
 
     def deserialize(self, data):
@@ -126,6 +128,13 @@ class Recommendation(db.Model):
                 raise DataValidationError(
                     "Invalid type for bool [bought_in_last_30_days]: "
                     + str(type(data["bought_in_last_30_days"]))
+                )
+            if isinstance(data["rating"], int):
+                self.rating = data["rating"]
+            else:
+                raise DataValidationError(
+                    "Invalid type for int [rating]: "
+                    + str(type(data["rating"]))
                 )
         except KeyError as error:
             raise DataValidationError(
@@ -187,3 +196,9 @@ class Recommendation(db.Model):
         """ Returns all Recommendations for given Type """
         logger.info("Processing lookup for recommendation type %s ...", recommendation_type)
         return cls.query.filter(cls.recommendation_type == recommendation_type)
+    
+    # @classmethod
+    # def find_by_rating(cls, by_rating: int) -> list:
+    #     """ Returns all Recommendations for given rating value """
+    #     logger.info("Processing lookup for rating %s ...", by_rating)
+    #     return cls.query.filter(cls.rating == by_rating)

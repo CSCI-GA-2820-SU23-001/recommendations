@@ -128,13 +128,15 @@ def update_recommendations(recommendation_id):
     if not recommendation:
         abort(status.HTTP_404_NOT_FOUND,
               f"recommendation with id '{recommendation_id}' was not found.")
-
     # Get the original create date, so that it doesn't get updated
     create_date = recommendation.serialize()["create_date"]
 
     # Deserialize the incoming request's JSON data into the recommendation
     recommendation.deserialize(request.get_json())
-    recommendation.id = recommendation_id
+    if recommendation.rating>5 or recommendation.rating<1:
+        abort(status.HTTP_400_BAD_REQUEST,
+              f"recommendation with rating '{recommendation.rating}' was not acceptable.")
+    # recommendation.id = recommendation_id
     recommendation.update_date = date.today()
     recommendation.create_date = create_date
     recommendation.update()
@@ -155,6 +157,7 @@ def delete_recommendation(recommendation_id):
           
     app.logger.info("Recommendation with ID %s delete complete.", recommendation_id)
     return "", status.HTTP_204_NO_CONTENT
+
 
 
 ######################################################################
@@ -179,4 +182,3 @@ def check_content_type(content_type):
     )
 
 
-    

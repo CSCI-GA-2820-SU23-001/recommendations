@@ -66,6 +66,8 @@ class TestRecommendation(unittest.TestCase):
         self.assertEqual(data["recommendation_type"], recommendation.recommendation_type.name)
         self.assertIn("bought_in_last_30_days", data)
         self.assertEqual(data["bought_in_last_30_days"], recommendation.bought_in_last_30_days)
+        self.assertIn("rating",data)
+        self.assertEqual(data["rating"],recommendation.rating)
         self.assertEqual(date.fromisoformat(data["create_date"]), recommendation.create_date)
         self.assertEqual(date.fromisoformat(data["update_date"]), recommendation.update_date)
 
@@ -79,6 +81,7 @@ class TestRecommendation(unittest.TestCase):
         self.assertEqual(recommendation.user_id, data["user_id"])
         self.assertEqual(recommendation.product_id, data["product_id"])
         self.assertEqual(recommendation.bought_in_last_30_days, data["bought_in_last_30_days"])
+        self.assertEqual(recommendation.rating,data["rating"])
         self.assertEqual(recommendation.create_date, None)
         self.assertEqual(recommendation.update_date, None)
 
@@ -122,6 +125,12 @@ class TestRecommendation(unittest.TestCase):
         recommendation = Recommendation()
         self.assertRaises(DataValidationError, recommendation.deserialize, data)
 
+    def test_deserialize_wrong_rating_data_type(self):
+        """It should not de-serialize a Recommendation with wrong rating data type"""
+        data = RecommendationFactory().serialize()
+        data["rating"] = str(data["rating"])
+        recommendation = Recommendation()
+        self.assertRaises(DataValidationError, recommendation.deserialize, data)
 
     def test_create_a_recommendation(self):
         """It should Create a recommendation and assert that it exists"""
@@ -174,6 +183,7 @@ class TestRecommendation(unittest.TestCase):
         self.assertEqual(recos[0].id, original_id)
         self.assertEqual(recos[0].recommendation_type, RecommendationType.RECOMMENDED_FOR_YOU)
         self.assertEqual(recos[0].update_date, date.today())
+        self.assertEqual(recos[0].rating, reco.rating)
 
     def test_delete_a_recommendation(self):
         """It should Delete a Recommendation"""

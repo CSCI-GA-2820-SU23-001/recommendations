@@ -26,4 +26,5 @@ class RecommendationFactory(factory.Factory):
     recommendation_type = FuzzyChoice(choices=[RecommendationType.UPSELL, RecommendationType.CROSS_SELL,
                                                RecommendationType.FREQ_BOUGHT_TOGETHER, RecommendationType.RECOMMENDED_FOR_YOU,
                                                RecommendationType.TRENDING, RecommendationType.UNKNOWN])
+    rating=FuzzyChoice(choices=[1,2,3,4,5])
     
