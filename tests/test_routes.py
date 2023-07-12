@@ -12,11 +12,11 @@ import logging
 from unittest import TestCase
 
 # from unittest.mock import MagicMock, patch
+from datetime import date
 from service import app
 from service.models import Recommendation, RecommendationType, db, init_db
 from service.common import status  # HTTP Status Codes
 from tests.factories import RecommendationFactory
-from datetime import date
 
 
 DATABASE_URI = os.getenv(
@@ -29,6 +29,7 @@ POP_REC_URL = "/recommendations/popular"
 ######################################################################
 #  T E S T   C A S E S
 ######################################################################
+# pylint: disable=too-many-public-methods
 class TestYourResourceServer(TestCase):
     """REST API Server Tests"""
 
