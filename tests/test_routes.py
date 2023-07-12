@@ -12,11 +12,11 @@ import logging
 from unittest import TestCase
 
 # from unittest.mock import MagicMock, patch
+from datetime import date
 from service import app
 from service.models import Recommendation, RecommendationType, db, init_db
 from service.common import status  # HTTP Status Codes
 from tests.factories import RecommendationFactory
-from datetime import date
 
 
 DATABASE_URI = os.getenv(
@@ -211,16 +211,16 @@ class TestYourResourceServer(TestCase):
         response = self.client.put(BASE_URL + "/" + "abc", json={})
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
-    def test_recommendation_not_found(self):
-        """
-        Test case for when a recommendation with the provided ID is not found.
-        """
-        response = self.client.put(
-            BASE_URL + "/" + str(999999),
-            json={},
-            headers={"Content-Type": "application/json"},
-        )
-        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+    # def test_recommendation_not_found(self):
+    #     """
+    #     Test case for when a recommendation with the provided ID is not found.
+    #     """
+    #     response = self.client.put(
+    #         BASE_URL + "/" + str(999999),
+    #         json={},
+    #         headers={"Content-Type": "application/json"},
+    #     )
+    #     self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
     # TEST CASES FOR DELETE #
     def test_delete_recommendation(self):

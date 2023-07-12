@@ -5,10 +5,11 @@ Test cases for Recommendation Model
 import os
 import logging
 import unittest
+from datetime import date
 from service.models import Recommendation, RecommendationType, DataValidationError, db
 from service import app
 from tests.factories import RecommendationFactory
-from datetime import date
+
 
 DATABASE_URI = os.getenv(
     "DATABASE_URI", "postgresql://postgres:postgres@localhost:5432/testdb"
@@ -47,10 +48,6 @@ class TestRecommendation(unittest.TestCase):
     ######################################################################
     #  T E S T   C A S E S
     ######################################################################
-
-    def test_example_replace_this(self):
-        """It should always be true"""
-        self.assertTrue(True)
 
     def test_serialize_a_recommendation(self):
         """It should serialize a Recommendation"""
