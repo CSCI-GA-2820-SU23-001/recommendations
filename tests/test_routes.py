@@ -29,6 +29,7 @@ POP_REC_URL = "/recommendations/popular"
 ######################################################################
 #  T E S T   C A S E S
 ######################################################################
+# pylint: disable=too-many-public-methods
 class TestYourResourceServer(TestCase):
     """REST API Server Tests"""
 
@@ -211,16 +212,16 @@ class TestYourResourceServer(TestCase):
         response = self.client.put(BASE_URL + "/" + "abc", json={})
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
-    # def test_recommendation_not_found(self):
-    #     """
-    #     Test case for when a recommendation with the provided ID is not found.
-    #     """
-    #     response = self.client.put(
-    #         BASE_URL + "/" + str(999999),
-    #         json={},
-    #         headers={"Content-Type": "application/json"},
-    #     )
-    #     self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+    def test_recommendation_not_found(self):
+        """
+        Test case for when a recommendation with the provided ID is not found.
+        """
+        response = self.client.put(
+            BASE_URL + "/" + str(999999),
+            json={},
+            headers={"Content-Type": "application/json"},
+        )
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
     # TEST CASES FOR DELETE #
     def test_delete_recommendation(self):
