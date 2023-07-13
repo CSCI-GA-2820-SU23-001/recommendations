@@ -113,7 +113,7 @@ def create_recommendations():
 
 ######################################################################
 # UPDATE A NEW RECOMMENDATION TYPE
-######################################################################
+# ######################################################################
 @app.route("/recommendations/<int:recommendation_id>", methods=["PUT"])
 def update_recommendations(recommendation_id):
     """
@@ -148,7 +148,6 @@ def update_recommendations(recommendation_id):
     app.logger.info("Recommendation with ID [%s] updated.", recommendation.id)
     return jsonify(recommendation.serialize()), status.HTTP_200_OK
 
-
 ######################################################################
 # DELETE A RECOMMENDATION
 ######################################################################
@@ -161,6 +160,48 @@ def delete_recommendation(recommendation_id):
         recommendation_id.delete()
     app.logger.info("Recommendation with ID %s delete complete.", recommendation_id)
     return "", status.HTTP_204_NO_CONTENT
+
+
+######################################################################
+# RATE AN EXISTING RECOMMENDATION
+######################################################################
+@app.route("/recommendations/<int:recommendation_id>/rating", methods=["PUT"])
+def update_recommendation_rating(recommendation_id):
+    """
+    This endpoint will update the rating of a recommendation based on its ID
+    """
+    app.logger.info("Request to update recommendation rating with id: %s", recommendation_id)
+    check_content_type("application/json")
+
+    # Get the recommendation from the database
+    recommendation = Recommendation.find(recommendation_id)
+    if not recommendation:
+        abort(
+            status.HTTP_404_NOT_FOUND,
+            f"Recommendation with id '{recommendation_id}' was not found.",
+        )
+
+    rating = request.get_json().get("rating")
+    if rating is not None:
+        try:
+            rating = int(rating)
+        except ValueError:
+            abort(
+                status.HTTP_400_BAD_REQUEST,
+                "Rating must be an integer between 0 and 5 (inclusive).",
+            )
+
+        if not (0 <= rating <= 5):
+            abort(
+                status.HTTP_400_BAD_REQUEST,
+                "Rating must be an integer between 0 and 5 (inclusive).",
+            )
+
+        recommendation.rating = rating
+        recommendation.update()
+
+    app.logger.info("Recommendation rating with ID [%s] updated.", recommendation.id)
+    return jsonify(recommendation.serialize()), status.HTTP_200_OK
 
 
 ######################################################################

@@ -166,7 +166,7 @@ class TestYourResourceServer(TestCase):
     ######################################################################
 
     def test_update_recommendation(self):
-        """It should Update an existing Recommendation"""
+        """It should Update an existing Recommendation with value"""
         # create a recommendation to update
         test_reco = RecommendationFactory()
         response = self.client.post(BASE_URL, json=test_reco.serialize())
@@ -176,7 +176,7 @@ class TestYourResourceServer(TestCase):
         new_reco = response.get_json()
         logging.debug(new_reco)
         new_reco["recommendation_type"] = RecommendationType.RECOMMENDED_FOR_YOU.name
-        new_reco["rating"] = 5
+        new_reco["rating"] = 6
         response = self.client.put(f"{BASE_URL}/{new_reco['id']}", json=new_reco)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         updated_reco = response.get_json()
@@ -186,6 +186,25 @@ class TestYourResourceServer(TestCase):
         )
         self.assertEqual(updated_reco["rating"], 5)
         self.assertEqual(updated_reco["update_date"], date.today().strftime("%Y-%m-%d"))
+    
+    def test_update_recommendation(self):
+        """It should Update an existing Recommendation with value"""
+        # Create a recommendation to update
+        test_reco = RecommendationFactory()
+        response = self.client.post(BASE_URL, json=test_reco.serialize())
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+        # Update the recommendation
+        recommendation_id = response.get_json()["id"]
+        updated_data = {
+            "rating": 6,
+        }
+        response = self.client.put(f"{BASE_URL}/{recommendation_id}", json=updated_data)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        updated_reco = response.get_json()
+        self.assertEqual(updated_reco["rating"], 5)
+        self.assertEqual(updated_reco["update_date"], date.today().strftime("%Y-%m-%d"))
+
 
     def test_update_recommendation_with_wrong_rating_value(self):
         """It should respond with a 400 for rating that is not in range 1-5"""
@@ -250,8 +269,66 @@ class TestYourResourceServer(TestCase):
             headers={"Content-Type": "application/json"},
         )
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+    
+    ######################################################################
+    #  UPDATE A RECOMMENDATION RATING
+    ######################################################################
+    def test_update_recommendation_rating(self):
+        """It should try to update the rating of an existing Recommendation"""
+        # Create a recommendation with a rating
+        test_reco = RecommendationFactory()
+        response = self.client.post(BASE_URL, json=test_reco.serialize())
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
-    # TEST CASES FOR DELETE #
+        # Update the rating of the recommendation
+        recommendation_id = response.get_json()["id"]
+        updated_rating = 5
+        response = self.client.put(f"{BASE_URL}/{recommendation_id}/rating", json={"rating": updated_rating})
+        
+        # Verify the response
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        updated_reco = response.get_json()
+        self.assertEqual(updated_reco["rating"], updated_rating)
+    
+    def test_update_rating_for_nonexisting_recommendation_id(self):
+        """It should respond with a 404 for no recommendation ID available"""
+        recommendation_id = 99
+        invalid_rating = 6
+        response = self.client.put(f"{BASE_URL}/{recommendation_id}/rating", json={"rating": invalid_rating})
+
+        # Verify the response
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        self.assertIn(f"Recommendation with id '{recommendation_id}' was not found.", response.get_json()["message"])
+
+    def test_update_rating_with_non_integer_values(self):
+        """It should respond with a 400 for non-integer ratings"""
+        test_reco = RecommendationFactory()
+        response = self.client.post(BASE_URL, json=test_reco.serialize())
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+        recommendation_id = response.get_json()["id"]
+        response = self.client.put(f"{BASE_URL}/{recommendation_id}/rating", json={"rating": "abc"})
+
+        # Verify the response
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertIn("Rating must be an integer between 0 and 5 (inclusive).", response.get_json()["message"])
+
+    def test_update_rating_with_wrong_values(self):
+        """It should respond with a 400 for ratings beyond range"""
+        test_reco = RecommendationFactory()
+        response = self.client.post(BASE_URL, json=test_reco.serialize())
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+        recommendation_id = response.get_json()["id"]
+        response = self.client.put(f"{BASE_URL}/{recommendation_id}/rating", json={"rating": 10})
+
+        # Verify the response
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertIn("Rating must be an integer between 0 and 5 (inclusive).", response.get_json()["message"])
+
+    ######################################################################
+    #  DELETE A RECOMMENDATION (READ)
+    ######################################################################
     def test_delete_recommendation(self):
         """It should Delete a Recommendation"""
         test_recommendation = self._create_recommendations(1)[0]
@@ -350,3 +427,24 @@ class TestYourResourceServer(TestCase):
             self.assertEqual(
                 recommendation["bought_in_last_30_days"], test_bought_in_last_30d
             )
+
+    # def test_update_rating_with_no_value(self):
+    #     """It should respond with a 400 for trying to update rating with no value"""
+    #     test_recommendation = RecommendationFactory()
+    #     response = self.client.post(BASE_URL, json=test_recommendation.serialize())
+    #     self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+    #     recommendation_id = response.get_json()["id"]
+    #     previous_rating = response.get_json()["rating"]
+
+    #     request_data = {
+    #         "user_id": 1,
+    #         "product_id": 4,
+    #         "recommendation_type": "RECOMMENDED_FOR_YOU",  # replace with actual enum string
+    #         "bought_in_last_30_days": False
+    #     }
+    #     response = self.client.put(f"/recommendations/{recommendation_id}", json=request_data)
+
+    #     self.assertEqual(response.status_code, status.HTTP_200_OK)
+    #     updated_recommendation = response.get_json()
+    #     self.assertEqual(updated_recommendation["rating"], previous_rating)
