@@ -32,6 +32,12 @@ def init_db(app):
     Recommendation.init_db(app)
 
 
+def check_is_int(value, error_message):
+    """Throws DataValidationError if the value is not an int"""
+    if not isinstance(value, int):
+        raise DataValidationError(error_message)
+
+
 class DataValidationError(Exception):
     """Used for an data validation errors when deserializing"""
 
@@ -52,9 +58,9 @@ class Recommendation(db.Model):
     bought_in_last_30_days = db.Column(db.Boolean, nullable=False, default=False)
     rating = db.Column(
         db.Integer,
-        CheckConstraint("rating>=1 AND rating<=5", name="rating_check"),
+        CheckConstraint("rating>=0 AND rating<=5", name="rating_check"),
         nullable=False,
-        default=1,
+        default=0,
     )
 
     recommendation_type = db.Column(
@@ -109,19 +115,10 @@ class Recommendation(db.Model):
             data (dict): A dictionary containing the resource data
         """
         try:
-            if isinstance(data["user_id"], int):
-                self.user_id = data["user_id"]
-            else:
-                raise DataValidationError(
-                    "Invalid type for int [user_id]: " + str(type(data["user_id"]))
-                )
-            if isinstance(data["product_id"], int):
-                self.product_id = data["product_id"]
-            else:
-                raise DataValidationError(
-                    "Invalid type for int [product_id]: "
-                    + str(type(data["product_id"]))
-                )
+            check_is_int(data["user_id"], "Invalid type for int [user_id]")
+            self.user_id = data["user_id"]
+            check_is_int(data["product_id"], "Invalid type for int [product_id]")
+            self.product_id = data["product_id"]
             if isinstance(data["recommendation_type"], str):
                 self.recommendation_type = getattr(
                     RecommendationType, data["recommendation_type"]
@@ -138,12 +135,10 @@ class Recommendation(db.Model):
                     "Invalid type for bool [bought_in_last_30_days]: "
                     + str(type(data["bought_in_last_30_days"]))
                 )
-            if isinstance(data["rating"], int):
+            if data.get("rating"):
+                check_is_int(data["rating"], "Invalid type for int [rating]")
                 self.rating = data["rating"]
-            else:
-                raise DataValidationError(
-                    "Invalid type for int [rating]: " + str(type(data["rating"]))
-                )
+
         except KeyError as error:
             raise DataValidationError(
                 "Invalid Recommendation: missing " + error.args[0]

@@ -74,7 +74,7 @@ tests/              - test cases package
    "user_id": 1,
    "product_id": 2,
    "recommendation_type": "UPSELL",
-   "bought_in_last_30_days": True
+   "bought_in_last_30_days": true
 }
 ```
 
@@ -91,7 +91,8 @@ tests/              - test cases package
     "recommendation_type": "UPSELL",
     "create_date": 2023-07-04,
     "update_date": 2023-07-04,
-    "bought_in_last_30_days": True
+    "bought_in_last_30_days": true,
+    "rating": 0
 }
 ```
 - Status: 400 Bad Request
@@ -127,7 +128,8 @@ tests/              - test cases package
         "recommendation_type": "UPSELL",
         "create_date": 2023-07-04,
         "update_date": 2023-07-04,
-        "bought_in_last_30_days": True
+        "bought_in_last_30_days": true,
+        "rating": 0
     }
 ]
 ```
@@ -148,7 +150,8 @@ tests/              - test cases package
     "recommendation_type": "UPSELL",
     "create_date": 2023-07-04,
     "update_date": 2023-07-04,
-    "bought_in_last_30_days": True
+    "bought_in_last_30_days": true,
+    "rating": 0
 }
 ```
 - Status: 404 Not Found
@@ -168,7 +171,7 @@ tests/              - test cases package
     "user_id": 1,
     "product_id": 2,
     "recommendation_type": "RECOMMENDED_FOR_YOU",
-    "bought_in_last_30_days": False
+    "bought_in_last_30_days": false
     "rating": 5
 }
 ```
@@ -182,7 +185,7 @@ tests/              - test cases package
     "recommendation_type": "RECOMMENDED_FOR_YOU",
     "create_date": 2023-07-04,
     "update_date": 2023-07-05,
-    "bought_in_last_30_days": False
+    "bought_in_last_30_days": false
     "rating":5
 }
 ```
