@@ -7,7 +7,7 @@ from datetime import date
 from flask import jsonify, request, url_for, abort
 from service.common import status  # HTTP Status Codes
 from service.models import Recommendation
-from service.common import error_handlers
+# from service.common import error_handlers
 
 # Import Flask application
 from . import app
@@ -100,10 +100,6 @@ def create_recommendations():
     app.logger.info("Request to create a recommendation")
     check_content_type("application/json")
     recommendation = Recommendation()
-    if not request.json:
-        return error_handlers.request_validation_error("No Data Provided")
-    if not isinstance(request.json["user_id"], int):
-        return error_handlers.request_validation_error("Invalid Data Type")
     recommendation.deserialize(request.get_json())
     recommendation.create()
     message = recommendation.serialize()
@@ -129,7 +125,6 @@ def update_recommendations(recommendation_id):
 
     # Get the recommendation from the database
     recommendation = Recommendation.find(recommendation_id)
-    # recommendation = Recommendation.query.get(recommendation_id)
     if not recommendation:
         abort(
             status.HTTP_404_NOT_FOUND,
@@ -140,12 +135,13 @@ def update_recommendations(recommendation_id):
 
     # Deserialize the incoming request's JSON data into the recommendation
     recommendation.deserialize(request.get_json())
-    if recommendation.rating > 5 or recommendation.rating < 1:
+
+    recommendation.id = recommendation_id
+    if recommendation.rating > 5 or recommendation.rating < 0:
         abort(
             status.HTTP_400_BAD_REQUEST,
             f"recommendation with rating '{recommendation.rating}' was not acceptable.",
         )
-    # recommendation.id = recommendation_id
     recommendation.update_date = date.today()
     recommendation.create_date = create_date
     recommendation.update()
