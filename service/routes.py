@@ -148,6 +148,7 @@ def update_recommendations(recommendation_id):
     app.logger.info("Recommendation with ID [%s] updated.", recommendation.id)
     return jsonify(recommendation.serialize()), status.HTTP_200_OK
 
+
 ######################################################################
 # DELETE A RECOMMENDATION
 ######################################################################
@@ -195,6 +196,7 @@ def update_recommendation_rating(recommendation_id):
 
     app.logger.info("Recommendation rating with ID [%s] updated.", recommendation.id)
     return jsonify(recommendation.serialize()), status.HTTP_200_OK
+
 
 ######################################################################
 #  U T I L I T Y   F U N C T I O N S
