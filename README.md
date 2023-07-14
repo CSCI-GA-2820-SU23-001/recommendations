@@ -212,7 +212,6 @@ tests/              - test cases package
 ##### Request Body
 ```json
 {
-    "id" : 1
     "rating": 5
 }
 ```
