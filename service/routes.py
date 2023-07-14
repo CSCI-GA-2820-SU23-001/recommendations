@@ -113,7 +113,7 @@ def create_recommendations():
 
 ######################################################################
 # UPDATE A NEW RECOMMENDATION TYPE
-######################################################################
+# ######################################################################
 @app.route("/recommendations/<int:recommendation_id>", methods=["PUT"])
 def update_recommendations(recommendation_id):
     """
@@ -154,7 +154,9 @@ def update_recommendations(recommendation_id):
 ######################################################################
 @app.route("/recommendations/<int:recommendation_id>", methods=["DELETE"])
 def delete_recommendation(recommendation_id):
-    """This endpoint will delete a Recommendation with the specified id"""
+    """
+    This endpoint will delete a Recommendation with the specified id
+    """
     app.logger.info("Request to delete a recommendation_id %s", recommendation_id)
     recommendation_id = Recommendation.find(recommendation_id)
     if recommendation_id:
@@ -164,10 +166,45 @@ def delete_recommendation(recommendation_id):
 
 
 ######################################################################
+# RATE AN EXISTING RECOMMENDATION
+# ######################################################################
+@app.route("/recommendations/<int:recommendation_id>/rating", methods=["PUT"])
+def update_recommendation_rating(recommendation_id):
+    """
+    This endpoint will update the rating of a recommendation based on its ID
+    """
+    app.logger.info("Request to update recommendation rating with id: %s", recommendation_id)
+    check_content_type("application/json")
+
+    # Get the recommendation from the database
+    recommendation = Recommendation.find(recommendation_id)
+    if not recommendation:
+        abort(
+            status.HTTP_404_NOT_FOUND,
+            f"Recommendation with id '{recommendation_id}' was not found.",
+        )
+
+    rating = request.get_json().get("rating")
+    if rating is not None and isinstance(rating, int) and 0 <= rating <= 5:
+        recommendation.rating = rating
+        recommendation.update()
+    else:
+        abort(
+            status.HTTP_400_BAD_REQUEST,
+            "Rating must be an integer between 0 and 5 (inclusive).",
+        )
+
+    app.logger.info("Recommendation rating with ID [%s] updated.", recommendation.id)
+    return jsonify(recommendation.serialize()), status.HTTP_200_OK
+
+
+######################################################################
 #  U T I L I T Y   F U N C T I O N S
 ######################################################################
 def check_content_type(content_type):
-    """Checks that the media type is correct"""
+    """
+    Checks that the media type is correct
+    """
     if "Content-Type" not in request.headers:
         app.logger.error("No Content-Type specified.")
         abort(
