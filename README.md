@@ -61,8 +61,9 @@ tests/              - test cases package
 |-------    |  ---------------------  |  ---------------------------------  |
 |POST       |  /recommendations       |  Creates a new recommendation       |
 |GET        |  /recommendations       |  Lists all recommendations          |
-|GET        |  /recommendations/{id}  |  Retrieves a recommendation  |
+|GET        |  /recommendations/{id}  |  Retrieves a recommendation         |
 |PUT        |  /recommendations/{id}  |  Updates a recommendation           |
+|PUT        |  /recommendations/{id}/rating| Rates recommendation
 |DELETE     |  /recommendations/{id}  |  Deletes a recommendation           |
 
 ### POST /recommendations
@@ -205,6 +206,53 @@ tests/              - test cases package
     "message": "recommendation with rating '6' was not acceptable."
 }
 ```
+### Update /recommendations/{id}/rating
+##### Headers
+- Content-Type: application/json
+##### Request Body
+```json
+{
+    "id" : 1
+    "rating": 5
+}
+```
+##### Response
+- Status: 200 OK
+```json
+{
+    "id": 1,
+    "user_id": 1,
+    "product_id": 2,
+    "recommendation_type": "RECOMMENDED_FOR_YOU",
+    "create_date": 2023-07-04,
+    "update_date": 2023-07-05,
+    "bought_in_last_30_days": false
+    "rating":5
+}
+```
+- Status: 404 NOT FOUND
+```json
+{
+    "status": 404,
+    "error": "Not Found",
+    "message": "recommendation with id '1' was not found."
+}
+```
+- Status: 400 BAD REQUEST
+```json
+{
+    "status": 400,
+    "error": "Bad Request",
+    "message": "recommendation with rating '6' was not acceptable."
+}
+```
+- Status: 400 BAD REQUEST
+```json
+{
+    "status": 400,
+    "error": "Bad Request",
+    "message": "recommendation with rating 'abc' was not acceptable."
+}
 ### DELETE /recommendations
 
 ##### Request Parameter
