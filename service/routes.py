@@ -164,7 +164,7 @@ def delete_recommendation(recommendation_id):
 
 ######################################################################
 # RATE AN EXISTING RECOMMENDATION
-######################################################################
+# ######################################################################
 @app.route("/recommendations/<int:recommendation_id>/rating", methods=["PUT"])
 def update_recommendation_rating(recommendation_id):
     """
@@ -182,27 +182,17 @@ def update_recommendation_rating(recommendation_id):
         )
 
     rating = request.get_json().get("rating")
-    if rating is not None:
-        try:
-            rating = int(rating)
-        except ValueError:
-            abort(
-                status.HTTP_400_BAD_REQUEST,
-                "Rating must be an integer between 0 and 5 (inclusive).",
-            )
-
-        if not (0 <= rating <= 5):
-            abort(
-                status.HTTP_400_BAD_REQUEST,
-                "Rating must be an integer between 0 and 5 (inclusive).",
-            )
-
+    if rating is not None and isinstance(rating, int) and 0 <= rating <= 5:
         recommendation.rating = rating
         recommendation.update()
+    else:
+        abort(
+            status.HTTP_400_BAD_REQUEST,
+            "Rating must be an integer between 0 and 5 (inclusive).",
+        )
 
     app.logger.info("Recommendation rating with ID [%s] updated.", recommendation.id)
     return jsonify(recommendation.serialize()), status.HTTP_200_OK
-
 
 ######################################################################
 #  U T I L I T Y   F U N C T I O N S

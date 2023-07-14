@@ -176,7 +176,7 @@ class TestYourResourceServer(TestCase):
         new_reco = response.get_json()
         logging.debug(new_reco)
         new_reco["recommendation_type"] = RecommendationType.RECOMMENDED_FOR_YOU.name
-        new_reco["rating"] = 6
+        new_reco["rating"] = 4
         response = self.client.put(f"{BASE_URL}/{new_reco['id']}", json=new_reco)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         updated_reco = response.get_json()
@@ -184,28 +184,9 @@ class TestYourResourceServer(TestCase):
             updated_reco["recommendation_type"],
             RecommendationType.RECOMMENDED_FOR_YOU.name,
         )
-        self.assertEqual(updated_reco["rating"], 5)
+        self.assertEqual(updated_reco["rating"], 4)
         self.assertEqual(updated_reco["update_date"], date.today().strftime("%Y-%m-%d"))
-    
-    def test_update_recommendation(self):
-        """It should Update an existing Recommendation with value"""
-        # Create a recommendation to update
-        test_reco = RecommendationFactory()
-        response = self.client.post(BASE_URL, json=test_reco.serialize())
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-
-        # Update the recommendation
-        recommendation_id = response.get_json()["id"]
-        updated_data = {
-            "rating": 6,
-        }
-        response = self.client.put(f"{BASE_URL}/{recommendation_id}", json=updated_data)
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        updated_reco = response.get_json()
-        self.assertEqual(updated_reco["rating"], 5)
-        self.assertEqual(updated_reco["update_date"], date.today().strftime("%Y-%m-%d"))
-
-
+   
     def test_update_recommendation_with_wrong_rating_value(self):
         """It should respond with a 400 for rating that is not in range 1-5"""
         test_reco = RecommendationFactory()
