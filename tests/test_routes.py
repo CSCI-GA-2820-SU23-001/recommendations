@@ -149,8 +149,10 @@ class TestYourResourceServer(TestCase):
 
     def test_create_recommendation_wrong_user_id(self):
         """It should not Create a Recommendation with wrong user id"""
+        # create a recommendation 
         test_recommendation = RecommendationFactory()
         logging.debug(test_recommendation)
+        
         # change user id to string
         test_recommendation.user_id = "1"
         response = self.client.post(BASE_URL, json=test_recommendation.serialize())
@@ -408,24 +410,3 @@ class TestYourResourceServer(TestCase):
             self.assertEqual(
                 recommendation["bought_in_last_30_days"], test_bought_in_last_30d
             )
-
-    # def test_update_rating_with_no_value(self):
-    #     """It should respond with a 400 for trying to update rating with no value"""
-    #     test_recommendation = RecommendationFactory()
-    #     response = self.client.post(BASE_URL, json=test_recommendation.serialize())
-    #     self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-
-    #     recommendation_id = response.get_json()["id"]
-    #     previous_rating = response.get_json()["rating"]
-
-    #     request_data = {
-    #         "user_id": 1,
-    #         "product_id": 4,
-    #         "recommendation_type": "RECOMMENDED_FOR_YOU",  # replace with actual enum string
-    #         "bought_in_last_30_days": False
-    #     }
-    #     response = self.client.put(f"/recommendations/{recommendation_id}", json=request_data)
-
-    #     self.assertEqual(response.status_code, status.HTTP_200_OK)
-    #     updated_recommendation = response.get_json()
-    #     self.assertEqual(updated_recommendation["rating"], previous_rating)
