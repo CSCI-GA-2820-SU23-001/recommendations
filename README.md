@@ -252,13 +252,14 @@ tests/              - test cases package
     "error": "Bad Request",
     "message": "recommendation with rating 'abc' was not acceptable."
 }
+```
 ### DELETE /recommendations
 
 ##### Request Parameter
-DELETE /recommendations/{id}
+- DELETE /recommendations/{id}
 
 ##### Request Body
-None
+- None
 
 ##### Response
 - Status: 204 No Content
