@@ -30,6 +30,8 @@
 				"rangav.vscode-thunder-client",
 				"ms-azuretools.vscode-docker",
 				"ms-kubernetes-tools.vscode-kubernetes-tools",
+				"IBM.ibmcloud-account",
+				"inercia.vscode-k3d",
 				"streetsidesoftware.code-spell-checker"
 			]	
 		}
@@ -42,6 +44,7 @@
 	// Features to add to the dev container. More info: https://containers.dev/features.
 	"features": {
 		"ghcr.io/devcontainers/features/docker-in-docker:2": {},
-		"ghcr.io/devcontainers/features/kubectl-helm-minikube:1": {}
+		"ghcr.io/devcontainers/features/kubectl-helm-minikube:1": {},
+		"ghcr.io/rio/features/skaffold:2": {}
 	}
 }
