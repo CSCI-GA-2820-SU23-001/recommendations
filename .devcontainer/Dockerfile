@@ -10,7 +10,9 @@ FROM rofrano/nyu-devops-base:su23
 # Set up the Python development environment
 WORKDIR /app
 COPY requirements.txt .
-RUN sudo pip install -r requirements.txt
+RUN sudo python -m pip install --upgrade pip wheel && \
+    sudo pip install -r requirements.txt
+
 
 # Install user mode tools
 COPY .devcontainer/scripts/install-tools.sh /tmp/
