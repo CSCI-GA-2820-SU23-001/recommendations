@@ -8,7 +8,7 @@ services:
       context: ..
       dockerfile: .devcontainer/Dockerfile    
     hostname: nyu
-    container_name: project
+    container_name: recommendations
     volumes:
       - ..:/app
       - ~/.bluemix/apikey.json:/home/vscode/.bluemix/apikey.json
