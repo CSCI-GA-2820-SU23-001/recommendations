@@ -18,8 +18,8 @@ echo "**********************************************************************"
 curl -fsSL https://clis.cloud.ibm.com/install/linux | sh
 echo "source /usr/local/ibmcloud/autocomplete/bash_autocomplete" >> $HOME/.bashrc
 # Install user mode IBM Cloud plugins
+ibmcloud plugin install container-service -r 'IBM Cloud'
 ibmcloud plugin install container-registry -r 'IBM Cloud'
-ibmcloud plugin install kubernetes-service -r 'IBM Cloud'
 echo "Creating aliases for ibmcloud tools..."
 echo "alias ic='/usr/local/bin/ibmcloud'" >> $HOME/.bash_aliases
 
