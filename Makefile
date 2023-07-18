@@ -63,7 +63,7 @@ namespace: ## Create the namespace assigned to the SPACE env variable
 .PHONY: login
 login: ## Login to IBM Cloud using yur api key
 	$(info Logging into IBM Cloud cluster $(CLUSTER)...)
-	ibmcloud login -a cloud.ibm.com -g Default -r us-south --apikey @~/.bluemix/apikeytest.json
+	ibmcloud login -a cloud.ibm.com -g Default -r us-south --apikey @~/.bluemix/apikey.json
 	ibmcloud cr login
 	ibmcloud ks cluster config --cluster $(CLUSTER)
 	kubectl cluster-info
