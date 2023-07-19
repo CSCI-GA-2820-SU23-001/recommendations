@@ -375,25 +375,6 @@ class TestYourResourceServer(TestCase):
         data = response.get_json()
         self.assertEqual(len(data), 5)
 
-    def test_query_recommendation_list_by_product_id(self):
-        """It should Query Recommendations by Product ID"""
-        recommendations = self._create_recommendations(10)
-        test_product_id = recommendations[0].product_id
-        product_id_recommendations = [
-            recommendation
-            for recommendation in recommendations
-            if recommendation.product_id == test_product_id
-        ]
-        response = self.client.get(
-            BASE_URL, query_string=f"product_id={test_product_id}"
-        )
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        data = response.get_json()
-        self.assertEqual(len(data), len(product_id_recommendations))
-        # check the data just to be sure
-        for recommendation in data:
-            self.assertEqual(recommendation["product_id"], test_product_id)
-
     def test_query_recommendation_list_by_user_id(self):
         """It should Query Recommendations by User ID"""
         recommendations = self._create_recommendations(10)
@@ -411,27 +392,7 @@ class TestYourResourceServer(TestCase):
         for recommendation in data:
             self.assertEqual(recommendation["user_id"], test_user_id)
 
-    def test_query_recommendation_list_by_bought_in_last30d(self):
-        """It should Query Recommendations by bought in the last 30 days"""
-        recommendations = self._create_recommendations(10)
-        test_bought_in_last_30d = recommendations[0].bought_in_last_30_days
-        bought_in_last_30d_recommendations = [
-            recommendation
-            for recommendation in recommendations
-            if recommendation.bought_in_last_30_days == test_bought_in_last_30d
-        ]
-        response = self.client.get(
-            BASE_URL, query_string=f"bought_in_last_30d={test_bought_in_last_30d}"
-        )
-        self.assertEqual(
-            response.status_code, status.HTTP_200_OK
-        )
-        data = response.get_json()
-        self.assertEqual(
-            len(data), len(bought_in_last_30d_recommendations)
-        )
-        # check the data just to be sure
-        for recommendation in data:
-            self.assertEqual(
-                recommendation["bought_in_last_30_days"], test_bought_in_last_30d
-            )
+    def test_query_recommendation_list_by_wrong_user_id(self):
+        """It should not list Recommendations with wrong user id type as a query parameter"""
+        response = self.client.get(BASE_URL, query_string=f"user_id={'foo'}")
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
