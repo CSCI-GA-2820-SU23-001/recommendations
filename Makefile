@@ -1,8 +1,8 @@
 # These can be overidden with env vars.
 REGISTRY ?= us.icr.io
-NAMESPACE ?= recommendations_test
+NAMESPACE ?= recommendation_dev
 IMAGE_NAME ?= recommendations
-IMAGE_TAG ?= 1.0
+IMAGE_TAG ?= 1.1
 IMAGE ?= $(REGISTRY)/$(NAMESPACE)/$(IMAGE_NAME):$(IMAGE_TAG)
 # PLATFORM ?= "linux/amd64,linux/arm64"
 PLATFORM ?= "linux/amd64"
