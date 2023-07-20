@@ -7,7 +7,7 @@ IMAGE ?= $(REGISTRY)/$(NAMESPACE)/$(IMAGE_NAME):$(IMAGE_TAG)
 # PLATFORM ?= "linux/amd64,linux/arm64"
 PLATFORM ?= "linux/amd64"
 CLUSTER ?= nyu-devops
-SPACE ?= dev
+SPACE ?= prod
 
 .PHONY: help
 help: ## Display this help.

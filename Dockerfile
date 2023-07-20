@@ -1,19 +1,26 @@
-# Image for a NYU Lab development environment
-FROM rofrano/nyu-devops-base:sp23
+FROM python:3.9-slim
 
-## Uncomment below lines to add Selenium for BDD
-# RUN sudo apt-get update && \
-#     sudo apt-get install -y chromium-driver python3-selenium && \
-#     sudo apt-get autoremove -y && \
-#     sudo apt-get clean -y
+# Added libraries for PostgreSQL before pip install
+RUN apt-get update && apt-get install -y gcc libpq-dev
 
-# Set up the Python development environment
+# Create working folder and install dependencies
 WORKDIR /app
 COPY requirements.txt .
-RUN sudo python -m pip install --upgrade pip wheel && \
-    sudo pip install -r requirements.txt
+RUN pip install -U pip wheel && \
+    pip install --no-cache-dir -r requirements.txt
 
+# Copy the application contents
+COPY service/ ./service/
 
-# Install user mode tools
-COPY .devcontainer/scripts/install-tools.sh /tmp/
-RUN cd /tmp; bash ./install-tools.sh
+# Switch to a non-root user
+RUN useradd --uid 1000 vagrant && chown -R vagrant /app
+USER vagrant
+
+# Expose any ports the app is expecting in the environment
+ENV FLASK_APP=service:app
+ENV PORT 8080
+EXPOSE $PORT
+
+ENV GUNICORN_BIND 0.0.0.0:$PORT
+ENTRYPOINT ["gunicorn"]
+CMD ["--log-level=info", "service:app"]
