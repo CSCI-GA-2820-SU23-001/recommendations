@@ -173,7 +173,7 @@ tests/              - test cases package
     "user_id": 1,
     "product_id": 2,
     "recommendation_type": "RECOMMENDED_FOR_YOU",
-    "bought_in_last_30_days": false,
+    "bought_in_last_30_days": false
     "rating": 5
 }
 ```
@@ -187,7 +187,7 @@ tests/              - test cases package
     "recommendation_type": "RECOMMENDED_FOR_YOU",
     "create_date": 2023-07-04,
     "update_date": 2023-07-05,
-    "bought_in_last_30_days": false,
+    "bought_in_last_30_days": false
     "rating":5
 }
 ```
@@ -226,7 +226,7 @@ tests/              - test cases package
     "recommendation_type": "RECOMMENDED_FOR_YOU",
     "create_date": 2023-07-04,
     "update_date": 2023-07-05,
-    "bought_in_last_30_days": false,
+    "bought_in_last_30_days": false
     "rating":5
 }
 ```
