@@ -27,17 +27,15 @@ def health():
 ######################################################################
 @app.route("/")
 def index():
-    """Base URL for our service"""
-    return app.send_static_file("index.html")
-    # """Root URL response"""
-    # return (
-    #     jsonify(
-    #         name="Recommendation REST API Service",
-    #         version="1.0",
-    #         paths=url_for("list_recommendations", _external=True),
-    #     ),
-    #     status.HTTP_200_OK,
-    # )
+    """Root URL response"""
+    return (
+        jsonify(
+            name="Recommendation REST API Service",
+            version="1.0",
+            paths=url_for("list_recommendations", _external=True),
+        ),
+        status.HTTP_200_OK,
+    )
 
 ######################################################################
 #  R E S T   A P I   E N D P O I N T S
