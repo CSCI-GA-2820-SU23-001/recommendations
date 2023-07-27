@@ -8,14 +8,16 @@ services:
       context: ..
       dockerfile: .devcontainer/Dockerfile    
     hostname: nyu
-    container_name: project
+    container_name: recommendations
     volumes:
       - ..:/app
+      - ~/.bluemix/apikey.json:/home/vscode/.bluemix/apikey.json
     command: sleep infinity
     environment:
       FLASK_APP: service:app
-      FLASK_DEBUG: "True"
+      FLASK_DEBUG: True
       PORT: 8000
+      #GUNICORN_BIND: "0.0.0.0:8080"
       DATABASE_URI: postgresql://postgres:postgres@postgres:5432/postgres
     networks:
       - dev
@@ -24,13 +26,17 @@ services:
 
   postgres:
     image: postgres:alpine
+    restart: unless-stopped
     # Uncomment ports to access database from your computer (optional)
     # ports:
     #   - 5432:5432
-    environment:
-      POSTGRES_PASSWORD: postgres
+
     volumes:
       - postgres:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_DB: postgres
+      POSTGRES_PASSWORD: postgres
     networks:
       - dev
 
