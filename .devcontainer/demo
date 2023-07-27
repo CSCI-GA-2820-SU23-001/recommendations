@@ -1,8 +1,8 @@
 # These can be overidden with env vars.
 REGISTRY ?= us.icr.io
-NAMESPACE ?= recommendation_dev
-IMAGE_NAME ?= recommendations
-IMAGE_TAG ?= 1.0
+NAMESPACE ?= nyu-devops
+IMAGE_NAME ?= lab-bluemix-cf
+IMAGE_TAG ?= 1.1
 IMAGE ?= $(REGISTRY)/$(NAMESPACE)/$(IMAGE_NAME):$(IMAGE_TAG)
 # PLATFORM ?= "linux/amd64,linux/arm64"
 PLATFORM ?= "linux/amd64"
@@ -42,10 +42,10 @@ lint: ## Run the linter
 	flake8 service tests --count --max-complexity=10 --max-line-length=127 --statistics
 	pylint service tests --max-line-length=127
 
-.PHONY: tests
+.PHONY: test
 test: ## Run the unit tests
 	$(info Running tests...)
-	green -vvv --processes=1 --run-coverage --termcolor --minimum-coverage=95
+	nosetests --with-spec --spec-color
 
 .PHONY: run
 run: ## Run the service
@@ -59,6 +59,11 @@ namespace: ## Create the namespace assigned to the SPACE env variable
 	kubectl get secret all-icr-io -n default -o yaml | sed 's/default/$(SPACE)/g' | kubectl create -n $(SPACE) -f -
 	kubectl config set-context --current --namespace $(SPACE)
 
+############################################################
+# COMMANDS FOR DEPLOYING THE IMAGE
+############################################################
+
+##@ Deployment
 
 .PHONY: login
 login: ## Login to IBM Cloud using yur api key

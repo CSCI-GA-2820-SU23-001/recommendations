@@ -18,7 +18,6 @@ from service.models import Recommendation, RecommendationType, db, init_db
 from service.common import status  # HTTP Status Codes
 from tests.factories import RecommendationFactory
 
-
 DATABASE_URI = os.getenv(
     "DATABASE_URI", "postgresql://postgres:postgres@localhost:5432/testdb"
 )
@@ -82,6 +81,13 @@ class TestYourResourceServer(TestCase):
         """It should call the home page"""
         resp = self.client.get("/")
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
+
+    def test_health(self):
+        """It should be healthy"""
+        response = self.client.get("/health")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        data = response.get_json()
+        self.assertEqual(data["status"], "OK")
 
     def test_create_recommendation(self):
         """It should Create a new Recommendation"""
