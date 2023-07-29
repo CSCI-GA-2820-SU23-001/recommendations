@@ -1,6 +1,7 @@
 # NYU DevOps Project Template
 
 [![Build Status](https://github.com/CSCI-GA-2820-SU23-001/recommendations/actions/workflows/tdd.yml/badge.svg)](https://github.com/CSCI-GA-2820-SU23-001/recommendations/actions)
+[![codecov](https://codecov.io/gh/CSCI-GA-2820-SU23-001/recommendations/branch/master/graph/badge.svg?token=7TQ88704Q5)](https://codecov.io/gh/CSCI-GA-2820-SU23-001/recommendations)
 [![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![Python](https://img.shields.io/badge/Language-Python-blue.svg)](https://python.org/)
 
@@ -263,6 +264,78 @@ tests/              - test cases package
 
 ##### Response
 - Status: 204 No Content
+
+## Docker Image format
+
+IMAGE ?= \$(REGISTRY)/\$(NAMESPACE)/$(IMAGE\_NAME):\$(IMAGE_TAG) <BR>
+
+REGISTRY: us.icr.io <br>
+NAMESPACE: <Container_Registry_Namespace> <br>
+IMAGE_NAME: recommendations <br>
+IMAGE_TAG: <Tag_Version>
+
+## Pre steps to deploy the application on IBM cloud
+
+### Step 1: 
+
+Login into IBM cloud. <br>
+General Menu -> Kubernetes -> Container Registry -> Images <br>
+
+Take note of the the tags of the image you want to deploy. If you are deploying a new image, you should tag the image as 1.0
+
+While creating the new image, increment the tag by .1 <br>
+Example: <br>
+Old Image: us.icr.io/recommendation_dev/recommendations:1.0 <br>
+New Image: us.icr.io/recommendation_dev/recommendations:1.1
+
+### Step 2:
+
+Change IMAGE_TAG in "Makefile"
+
+```
+IMAGE_TAG ?= < tag_version >
+```
+
+### Step 3:
+
+Change <b>spec.template.spec.image</b> in "./deploy/deployment.yaml"<br>
+Example:<br>
+<b>image</b>: us.icr.io/recommendation_dev/recommendations:1.0
+
+### Step 4:
+Run the following commands in container
+> make login<br>
+> make build <br>
+> docker push <image> <br>
+> > Example: docker push us.icr.io/recommendation_dev/recommendations:1.0
+
+### Step 5:
+
+Change <b>spec.ports.nodeport</b> in ./deploy/service.yaml
+
+For dev namespace: 30001<br>
+For prod namespace: 30002
+
+## Deploy the application
+
+<b>Note</b>: Two kubernetes namespaces used in our project is "dev" and "prod"
+
+Deploy deployment, service and postgres together:<br>
+kc apply -f ./deploy/ -n <kubernets_namespace>
+
+Deploy deployment:<br>
+kc apply -f ./deploy/deployment.yaml -n <kubernets_namespace>
+
+Deploy service:<br>
+kc apply -f ./deploy/service.yaml -n <kubernets_namespace>
+
+Deploy postgresql:<br>
+kc apply -f ./deploy/postgresql.yaml -n <kubernets_namespace>
+
+Check for successful deployments:<br>
+kc get all -n <kubernets_namespace>
+
+
 
 ## License
 
