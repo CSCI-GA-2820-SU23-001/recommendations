@@ -6,16 +6,16 @@ $(function () {
 
     // Updates the form with data from the response
     function update_form_data(res) {
-        $("#reco_id").val(res.id.toString());
-        $("#user_id").val(res.user_id.toString());
-        $("#product_id").val(res.product_id);
-        if (res.bought_in_last_30_days == true) {
-            $("#bought").val("true");
+        $("#pet_id").val(res.id);
+        $("#pet_name").val(res.name);
+        $("#pet_category").val(res.category);
+        if (res.available == true) {
+            $("#pet_available").val("true");
         } else {
-            $("#bought").val("false");
+            $("#pet_available").val("false");
         }
-        $("#rating").val(res.rating.toString());
-        $("#reco_type").val(res.recommendation_type);
+        $("#pet_gender").val(res.gender);
+        $("#pet_birthday").val(res.birthday);
     }
 
     /// Clears all form fields
@@ -34,41 +34,40 @@ $(function () {
     }
 
     // ****************************************
-    // Create a Recommendation
+    // Create a Pet
     // ****************************************
 
     $("#create-btn").click(function () {
 
-        let user_id = $("#user_id").val();
-        let product_id = $("#product_id").val();
-        let reco_type = $("#reco_type").val();
-        let bought = $("#bought").val() == "true";
+        let name = $("#pet_name").val();
+        let category = $("#pet_category").val();
+        let available = $("#pet_available").val() == "true";
+        let gender = $("#pet_gender").val();
+        let birthday = $("#pet_birthday").val();
 
         let data = {
-            "user_id": parseInt(user_id),
-            "product_id": parseInt(product_id),
-            "recommendation_type": reco_type,
-            "bought_in_last_30_days": bought
+            "name": name,
+            "category": category,
+            "available": available,
+            "gender": gender,
+            "birthday": birthday
         };
 
         $("#flash_message").empty();
-
+        
         let ajax = $.ajax({
             type: "POST",
-            url: "/recommendations",
+            url: "/pets",
             contentType: "application/json",
             data: JSON.stringify(data),
         });
 
-        ajax.done(function (res) {
+        ajax.done(function(res){
             update_form_data(res)
-            console.log(res)
-            console.log('hello')
             flash_message("Success")
         });
 
-        ajax.fail(function (res) {
-            console.log('FAIL')
+        ajax.fail(function(res){
             flash_message(res.responseJSON.message)
         });
     });
@@ -98,47 +97,47 @@ $(function () {
         $("#flash_message").empty();
 
         let ajax = $.ajax({
-            type: "PUT",
-            url: `/pets/${pet_id}`,
-            contentType: "application/json",
-            data: JSON.stringify(data)
-        })
+                type: "PUT",
+                url: `/pets/${pet_id}`,
+                contentType: "application/json",
+                data: JSON.stringify(data)
+            })
 
-        ajax.done(function (res) {
+        ajax.done(function(res){
             update_form_data(res)
             flash_message("Success")
         });
 
-        ajax.fail(function (res) {
+        ajax.fail(function(res){
             flash_message(res.responseJSON.message)
         });
 
     });
 
     // ****************************************
-    // Retrieve a Recommendation
+    // Retrieve a Pet
     // ****************************************
 
     $("#retrieve-btn").click(function () {
 
-        let reco_id = $("#reco_id").val();
+        let pet_id = $("#pet_id").val();
 
         $("#flash_message").empty();
 
         let ajax = $.ajax({
             type: "GET",
-            url: `/recommendations/${reco_id}`,
+            url: `/pets/${pet_id}`,
             contentType: "application/json",
             data: ''
         })
 
-        ajax.done(function (res) {
+        ajax.done(function(res){
             //alert(res.toSource())
             update_form_data(res)
             flash_message("Success")
         });
 
-        ajax.fail(function (res) {
+        ajax.fail(function(res){
             clear_form_data()
             flash_message(res.responseJSON.message)
         });
@@ -162,12 +161,12 @@ $(function () {
             data: '',
         })
 
-        ajax.done(function (res) {
+        ajax.done(function(res){
             clear_form_data()
             flash_message("Pet has been Deleted!")
         });
 
-        ajax.fail(function (res) {
+        ajax.fail(function(res){
             flash_message("Server error!")
         });
     });
@@ -221,7 +220,7 @@ $(function () {
             data: ''
         })
 
-        ajax.done(function (res) {
+        ajax.done(function(res){
             //alert(res.toSource())
             $("#search_results").empty();
             let table = '<table class="table table-striped" cellpadding="10">'
@@ -234,9 +233,9 @@ $(function () {
             table += '<th class="col-md-2">Birthday</th>'
             table += '</tr></thead><tbody>'
             let firstPet = "";
-            for (let i = 0; i < res.length; i++) {
+            for(let i = 0; i < res.length; i++) {
                 let pet = res[i];
-                table += `<tr id="row_${i}"><td>${pet.id}</td><td>${pet.name}</td><td>${pet.category}</td><td>${pet.available}</td><td>${pet.gender}</td><td>${pet.birthday}</td></tr>`;
+                table +=  `<tr id="row_${i}"><td>${pet.id}</td><td>${pet.name}</td><td>${pet.category}</td><td>${pet.available}</td><td>${pet.gender}</td><td>${pet.birthday}</td></tr>`;
                 if (i == 0) {
                     firstPet = pet;
                 }
@@ -252,7 +251,7 @@ $(function () {
             flash_message("Success")
         });
 
-        ajax.fail(function (res) {
+        ajax.fail(function(res){
             flash_message(res.responseJSON.message)
         });
 
