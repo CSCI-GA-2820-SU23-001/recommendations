@@ -135,6 +135,51 @@ tests/              - test cases package
     }
 ]
 ```
+###### Get a list of recommendations by user id
+
+##### Headers
+- Content-Type: application/json
+
+##### Query Parameters
+- user_id: 1
+
+##### Response
+- Status: 200 OK
+  
+```json
+[
+  {
+    "bought_in_last_30_days": true,
+    "create_date": "2023-07-30",
+    "id": 1,
+    "product_id": 2,
+    "rating": 0,
+    "recommendation_type": "UPSELL",
+    "update_date": "2023-07-30",
+    "user_id": 1
+  },
+  {
+    "bought_in_last_30_days": true,
+    "create_date": "2023-07-30",
+    "id": 728,
+    "product_id": 20,
+    "rating": 0,
+    "recommendation_type": "UPSELL",
+    "update_date": "2023-07-30",
+    "user_id": 1
+  },
+  {
+    "bought_in_last_30_days": true,
+    "create_date": "2023-07-30",
+    "id": 729,
+    "product_id": 35,
+    "rating": 0,
+    "recommendation_type": "UPSELL",
+    "update_date": "2023-07-30",
+    "user_id": 1
+  }
+]
+```
 
 ### GET /recommendations/{id}
 ###### Get the contents of a recommendation
