@@ -6,7 +6,7 @@ $(function () {
 
     // Updates the form with data from the response
     function update_form_data(res) {
-        $("#reco_recommendation_id").val(res.id.toString());
+        $("#reco_id").val(res.id.toString());
         $("#reco_user_id").val(res.user_id.toString());
         $("#reco_product_id").val(res.product_id);
         if (res.bought_in_last_30_days == true) {
@@ -22,7 +22,7 @@ $(function () {
     function clear_form_data() {
         $("#reco_user_id").val("");
         $("#reco_product_id").val("");
-        $("#reco_bought").val("");
+        $("#reco_bought_in_last_30_days").val("");
         $("#reco_rating").val("");
         $("#reco_recommendation_type").val("");
     }
@@ -41,13 +41,13 @@ $(function () {
 
         let user_id = $("#reco_user_id").val();
         let product_id = $("#reco_product_id").val();
-        let reco_type = $("#reco_recommendation_type").val();
-        let bought = $("#reco_bought").val() == "true";
+        let recommendation_type = $("#reco_recommendation_type").val();
+        let bought = $("#reco_bought_in_last_30_days").val() == "true";
 
         let data = {
             "user_id": parseInt(user_id),
             "product_id": parseInt(product_id),
-            "recommendation_type": reco_type,
+            "recommendation_type": recommendation_type,
             "bought_in_last_30_days": bought
         };
 
