@@ -47,25 +47,25 @@
 
           <!-- User ID -->
           <div class="form-group">
-            <label class="control-label col-sm-2" for="user_id">User ID:</label>
+            <label class="control-label col-sm-2" for="reco_user_id">User ID:</label>
             <div class="col-sm-10">
-              <input type="text" class="form-control" id="user_id" placeholder="Enter a User ID">
+              <input type="text" class="form-control" id="reco_user_id" placeholder="Enter a User ID">
             </div>
           </div>
 
           <!-- Product ID -->
           <div class="form-group">
-            <label class="control-label col-sm-2" for="product_id">Product_ID:</label>
+            <label class="control-label col-sm-2" for="reco_product_id">Product_ID:</label>
             <div class="col-sm-10">
-              <input type="text" class="form-control" id="product_id" placeholder="Enter the Product ID">
+              <input type="text" class="form-control" id="reco_product_id" placeholder="Enter the Product ID">
             </div>
           </div>
 
           <!-- Bought in last 30 days -->
           <div class="form-group">
-            <label class="control-label col-sm-2" for="bought">Bought in last 30 days:</label>
+            <label class="control-label col-sm-2" for="reco_bought">Bought in last 30 days:</label>
             <div class="col-sm-10">
-              <select class="form-control" id="bought">
+              <select class="form-control" id="reco_bought">
                 <option value="true" selected>True</option>
                 <option value="false">False</option>
               </select>
@@ -73,9 +73,9 @@
           </div>
           <!-- Recommendation rating -->
           <div class="form-group">
-            <label class="control-label col-sm-2" for="rating">Rating:</label>
+            <label class="control-label col-sm-2" for="reco_rating">Rating:</label>
             <div class="col-sm-10">
-              <select class="form-control" id="rating">
+              <select class="form-control" id="reco_rating">
                 <option value="1">1</option>
                 <option value="2">2</option>
                 <option value="3">3</option>
@@ -87,9 +87,9 @@
 
           <!--Recommendation Type -->
           <div class="form-group">
-            <label class="control-label col-sm-2" for="reco_type">Recommendation Type:</label>
+            <label class="control-label col-sm-2" for="reco_recommendation_type">Recommendation Type:</label>
             <div class="col-sm-10">
-              <select class="form-control" id="reco_type">
+              <select class="form-control" id="reco_recommendation_type">
                 <option value="UPSELL">Up Sell</option>
                 <option value="CROSS_SELL">Cross Sell</option>
                 <option value="FREQUENTLY_BOUGHT_TOGETHER">Frequently Bought Together</option>
@@ -135,13 +135,13 @@
         <thead>
           <tr>
             <th class="col-md-1">ID</th>
-            <th class="col-md-4">User_ID</th>
-            <th class="col-md-4">Product_ID</th>
-            <th class="col-md-3">Create_Date</th>
-            <th class="col-md-3">Update_Date</th>
-            <th class="col-md-3">Bought_in_last_30_days</th>
+            <th class="col-md-4">User ID</th>
+            <th class="col-md-4">Product ID</th>
+            <th class="col-md-3">Create Date</th>
+            <th class="col-md-3">Update Date</th>
+            <th class="col-md-3">Bought in last 30 days</th>
             <th class="col-md-3">Rating</th>
-            <th class="col-md-3">Recommendation_type</th>
+            <th class="col-md-3">Recommendation Type</th>
           </tr>
         </thead>
       </table>
