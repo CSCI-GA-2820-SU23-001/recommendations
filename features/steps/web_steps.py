@@ -5,7 +5,7 @@ from selenium.webdriver.support.ui import Select, WebDriverWait
 from selenium.webdriver.support import expected_conditions
 
 
-ID_PREFIX = 'recommendation_'
+ID_PREFIX = 'reco_'
 
 
 @when('I visit the "home page"')

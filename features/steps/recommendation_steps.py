@@ -31,7 +31,6 @@ def step_impl(context):
     # load the database with new recommendations
     for row in context.table:
         payload = {
-            "id" : int(row['id']),
             "user_id" : int(row['user_id']),
             "product_id" : int(row['product_id']),
             "bought_in_last_30_days" : row['bought_in_last_30_days'] in ['True','true', True],
