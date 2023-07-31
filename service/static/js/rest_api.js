@@ -74,31 +74,31 @@ $(function () {
     });
 
     // ****************************************
-    // Update a Pet
+    // Update a Recommendation
     // ****************************************
 
     $("#update-btn").click(function () {
 
-        let pet_id = $("#pet_id").val();
-        let name = $("#pet_name").val();
-        let category = $("#pet_category").val();
-        let available = $("#pet_available").val() == "true";
-        let gender = $("#pet_gender").val();
-        let birthday = $("#pet_birthday").val();
+        let reco_id = $("#reco_id").val();
+        let user_id = $("#reco_user_id").val();
+        let product_id = $("#reco_product_id").val();
+        let bought_in_last_30_days = $("#reco_bought_in_last_30_days").val() == "true";
+        let recommendation_type = $("#reco_recommendation_type ").val();
+        let rating = $("#reco_rating").val();
 
         let data = {
-            "name": name,
-            "category": category,
-            "available": available,
-            "gender": gender,
-            "birthday": birthday
+            "user_id": parseInt(user_id),
+            "product_id": parseInt(product_id),
+            "bought_in_last_30_days": bought_in_last_30_days,
+            "recommendation_type": recommendation_type,
+            "rating": parseInt(rating),
         };
 
         $("#flash_message").empty();
 
         let ajax = $.ajax({
             type: "PUT",
-            url: `/pets/${pet_id}`,
+            url: `/recommendations/${reco_id}`,
             contentType: "application/json",
             data: JSON.stringify(data)
         })
