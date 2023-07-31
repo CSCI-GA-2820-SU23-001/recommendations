@@ -176,7 +176,7 @@ $(function () {
     // ****************************************
 
     $("#clear-btn").click(function () {
-        $("#pet_id").val("");
+        $("#reco_id").val("");
         $("#flash_message").empty();
         clear_form_data()
     });
