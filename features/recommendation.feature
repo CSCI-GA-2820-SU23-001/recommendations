@@ -26,13 +26,15 @@ Feature: The recommendation service back-end
         And I select "Up Sell" in the "Recommendation Type"
         And I press the "Create" button
         Then I should see the message "Success"
-        When I press the "Clear" button
-        Then the "User ID" field should be empty
+        When I copy the "ID" field
+        And I press the "Clear" button
+        Then the "ID" field should be empty
+        And the "User ID" field should be empty
         And the "Product ID" field should be empty
         And the "Bought in last 30 days" field should be empty
         And the "Recommendation Type" field should be empty
-        When I copy the "ID" field
-        And I paste the "ID" field
+        # When I copy the "ID" field
+        When I paste the "ID" field
         And I press the "Retrieve" button
         Then I should see the message "Success"
         And I should see "2" in the "User ID" field
