@@ -8,9 +8,9 @@ Feature: The recommendation service back-end
             | id | user_id | product_id | bought_in_last_30_days | rating | recommendation_type |
             | 1  | 11      | 15         | True                   | 2      | UPSELL              |
             | 2  | 21      | 10         | True                   | 3      | CROSS_SELL          |
-            | 3  | 1       | 21         | False                  | 4      | TRENDING            |
-            | 4  | 5       | 1          | False                  | 0      | UPSELL              |
-            | 5  | 11      | 1          | False                  | 1      | TRENDING            |
+            | 3  | 1       | 28         | False                  | 4      | TRENDING            |
+            | 4  | 5       | 31         | False                  | 0      | UPSELL              |
+            | 5  | 9       | 16         | False                  | 1      | TRENDING            |
 
 
     Scenario: The server is running
@@ -20,8 +20,8 @@ Feature: The recommendation service back-end
 
     Scenario: Create a Recommendation
         When I visit the "home page"
-        And I set the "User ID" to "2"
-        And I set the "Product ID" to "21"
+        And I set the "User ID" to "11"
+        And I set the "Product ID" to "15"
         And I select "True" in the "Bought in last 30 days"
         And I select "Up Sell" in the "Recommendation Type"
         And I press the "Create" button
@@ -37,10 +37,32 @@ Feature: The recommendation service back-end
         When I paste the "ID" field
         And I press the "Retrieve" button
         Then I should see the message "Success"
-        And I should see "2" in the "User ID" field
-        And I should see "21" in the "Product ID" field
+        And I should see "11" in the "User ID" field
+        And I should see "15" in the "Product ID" field
         And I should see "True" in the "Bought in last 30 days"
         And I should see "Up Sell" in the "Recommendation Type"
+
+    Scenario: Update a Recommendation
+        When I visit the "home page"
+        And I set the "User ID" to "21"
+        And I press the "Search" button
+        Then I should see the message "Success"
+        And I should see "21" in the "User ID" field
+        And I should see "10" in the "Product ID" field
+        When I change "User ID" to "30"
+        And I press the "Update" button
+        Then I should see the message "Success"
+        When I copy the "Id" field
+        And I press the "Clear" button
+        And I paste the "Id" field
+        And I press the "Retrieve" button
+        Then I should see the message "Success"
+        And I should see "30" in the "User ID" field
+        When I press the "Clear" button
+        And I press the "Search" button
+        Then I should see the message "Success"
+        And I should see "30" in the results
+        And I should not see "21" in the results
 
     Scenario: List all pets
         When I visit the "home page"
@@ -48,6 +70,7 @@ Feature: The recommendation service back-end
         Then I should see the message "Success"
         And I should see "11" in the "USER ID" field
         And I should see "15" in the "PRODUCT ID" field
+    
 
     Scenario: Delete a Recommendation
         When I visit the "home page"
