@@ -40,6 +40,24 @@ def step_impl(context, text, element_name):
     element = Select(context.driver.find_element(By.ID, element_id))
     element.select_by_visible_text(text)
 
+@when('I select "{text}" in the "{element_name}" dropdown')
+def step_impl(context, text, element_name):
+    element_id = ID_PREFIX + element_name.lower().replace(' ', '_')
+    element = Select(context.driver.find_element(By.ID, element_id))
+    element.select_by_visible_text(text)
+
+@then('I should see "{text}" in the "{element_name}" dropdown')
+def step_impl(context, text, element_name):
+    element_id = ID_PREFIX + element_name.lower().replace(' ', '_')
+    element = Select(context.driver.find_element(By.ID, element_id))
+    assert(element.first_selected_option.text == text)
+
+@then('I should not see "{text}" in the "{element_name}" dropdown')
+def step_impl(context, text, element_name):
+    element_id = ID_PREFIX + element_name.lower().replace(' ', '_')
+    element = Select(context.driver.find_element(By.ID, element_id))
+    assert(element.first_selected_option.text != text)
+
 @then('I should see "{text}" in the "{element_name}"')
 def step_impl(context, text, element_name):
     element_id = ID_PREFIX + element_name.lower().replace(' ', '_')

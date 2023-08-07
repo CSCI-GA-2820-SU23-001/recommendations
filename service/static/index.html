@@ -13,7 +13,7 @@
 <body>
   <div class="container">
     <div class="page-header">
-      <h1>Recommendation REST API Service</h1>
+      <h1>Recommendations REST API Service</h1>
     </div>
 
     <!-- Flash Message -->
@@ -28,7 +28,7 @@
 
     <!-- FORM -->
     <div class="col-md-12" id="form_data">
-      <h3>Create, Retrieve, Update, Delete, and Rate a Recommendation:</h3>
+      <h3>Create, Search, Retrieve, Update, Delete, and Rate a Recommendation:</h3>
       <div class="well">
         <div class="form-horizontal">
           <div class="form-group">
@@ -100,22 +100,6 @@
             </div>
           </div>
 
-          <!-- Create date -->
-          <!-- <div class="form-group">
-            <label class="control-label col-sm-2" for="create_date">Create Date:</label>
-            <div class="col-sm-10">
-              <input type="date" class="form-control" id="create_date" placeholder="2023-07-01">
-            </div>
-          </div> -->
-
-          <!-- Update date -->
-          <!-- <div class="form-group">
-            <label class="control-label col-sm-2" for="update_date">Update Date:</label>
-            <div class="col-sm-10">
-              <input type="date" class="form-control" id="update_date" placeholder="2023-07-02">
-            </div>
-          </div> -->
-
           <!-- SUBMIT BUTTONS -->
           <div class="form-group">
             <div class="col-sm-offset-2 col-sm-10">
@@ -123,6 +107,7 @@
               <button type="submit" class="btn btn-primary" id="clear-btn">Clear</button>
               <button type="submit" class="btn btn-success" id="create-btn">Create</button>
               <button type="submit" class="btn btn-warning" id="update-btn">Update</button>
+              <button type="submit" class="btn btn-info" id="rate-btn">Rate</button>
             </div>
           </div>
         </div> <!-- form horizontal -->
