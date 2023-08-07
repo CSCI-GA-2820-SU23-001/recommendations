@@ -36,10 +36,13 @@ def health():
 ######################################################################
 @app.route("/")
 def index():
-    """Base URL for our service"""
+    """
+    Base URL for our service
+    """
     return app.send_static_file("index.html")
-
 # Define the model so that the docs reflect what can be sent
+
+
 create_model = api.model(
     "Recommendations",
     {
@@ -111,12 +114,6 @@ recommendation_args.add_argument(
 
 
 ######################################################################
-#  R E S T   A P I   E N D P O I N T S
-######################################################################
-
-
-
-######################################################################
 #  PATH: /recommendations/{recommendation_id}
 ######################################################################
 @api.route("/recommendations/<recommendation_id>")
@@ -152,7 +149,7 @@ class RecommendationResource(Resource):
 
         app.logger.info("Returning recommendation: %s", recommendation.user_id)
         return recommendation.serialize(), status.HTTP_200_OK
-    
+
     # ------------------------------------------------------------------
     # UPDATE AN EXISTING RECOMMENDATION
     # ------------------------------------------------------------------
@@ -181,7 +178,7 @@ class RecommendationResource(Resource):
         create_date = recommendation.serialize()["create_date"]
 
         # Deserialize the incoming payload into the recommendation
-        data=api.payload
+        data = api.payload
         recommendation.deserialize(data)
 
         recommendation.id = recommendation_id
@@ -195,7 +192,7 @@ class RecommendationResource(Resource):
         recommendation.update()
         app.logger.info("Recommendation with ID [%s] updated.", recommendation.id)
         return recommendation.serialize(), status.HTTP_200_OK
-    
+
     # ------------------------------------------------------------------
     # DELETE A RECOMMENDATION
     # ------------------------------------------------------------------
@@ -204,7 +201,6 @@ class RecommendationResource(Resource):
     def delete(self, recommendation_id):
         """
         Delete a recommendation
-        
         This endpoint will delete a Recommendation with the specified id
         """
         app.logger.info("Request to delete a recommendation_id %s", recommendation_id)
@@ -213,12 +209,12 @@ class RecommendationResource(Resource):
             recommendation_id.delete()
         app.logger.info("Recommendation with ID %s delete complete.", recommendation_id)
         return "", status.HTTP_204_NO_CONTENT
-        
-
 
 ######################################################################
 #  PATH: /recommendations
 ######################################################################
+
+
 @api.route("/recommendations", strict_slashes=False)
 class RecommendationCollection(Resource):
     """Handles all interactions with collections of Recommendations"""
@@ -238,7 +234,7 @@ class RecommendationCollection(Resource):
 
         if args["user_id"]:
             try:
-                args["user_id"]= int(args["user_id"])
+                args["user_id"] = int(args["user_id"])
             except ValueError:
                 abort(
                     status.HTTP_400_BAD_REQUEST,
@@ -280,6 +276,8 @@ class RecommendationCollection(Resource):
 ######################################################################
 #  PATH: /recommendations/{recommendation_id}/rating
 ######################################################################
+
+
 @api.route("/recommendations/<recommendation_id>/rating")
 @api.param("recommendation_id", "The Recommendation identifier")
 class PurchaseResource(Resource):
@@ -291,8 +289,7 @@ class PurchaseResource(Resource):
     def put(self, recommendation_id):
         """
         Rate a Recommendation
-
-        This endpoint will rate a Recommendation 
+        This endpoint will rate a Recommendation
         """
         app.logger.info("Request to update recommendation rating with id: %s", recommendation_id)
         check_content_type("application/json")
@@ -304,10 +301,10 @@ class PurchaseResource(Resource):
                 status.HTTP_404_NOT_FOUND,
                 f"Recommendation with id '{recommendation_id}' was not found.",
             )
-        
+
         rating = api.payload
         recommendation.deserialize(rating)
-        
+
         # rating = request.get_json().get("rating")
         if rating is not None and isinstance(rating, int) and 0 <= rating <= 5:
             recommendation.rating = rating
@@ -320,10 +317,12 @@ class PurchaseResource(Resource):
 
         app.logger.info("Recommendation rating with ID [%s] updated.", recommendation.id)
         return recommendation.serialize(), status.HTTP_200_OK
-    
+
 ######################################################################
 #  U T I L I T Y   F U N C T I O N S
 ######################################################################
+
+
 def check_content_type(content_type):
     """
     Checks that the media type is correct
