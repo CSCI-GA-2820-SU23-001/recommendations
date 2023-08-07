@@ -243,4 +243,37 @@ $(function () {
 
     });
 
+    // ****************************************
+    // Rate a Recommendation
+    // ****************************************
+
+    $("#rate-btn").click(function () {
+
+        let reco_id = $("#reco_id").val();
+        let rating = $("#reco_rating").val();
+
+        let data = {
+            "rating": parseInt(rating),
+        };
+
+        $("#flash_message").empty();
+
+        let ajax = $.ajax({
+            type: "PUT",
+            url: `/recommendations/${reco_id}/rating`,
+            contentType: "application/json",
+            data: JSON.stringify(data)
+        })
+
+        ajax.done(function (res) {
+            update_form_data(res)
+            flash_message("Success")
+        });
+
+        ajax.fail(function (res) {
+            flash_message(res.responseJSON.message)
+        });
+
+    });
+
 })
