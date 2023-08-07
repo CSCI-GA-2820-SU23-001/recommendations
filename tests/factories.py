@@ -27,7 +27,7 @@ class RecommendationFactory(factory.Factory):
         choices=[
             RecommendationType.UPSELL,
             RecommendationType.CROSS_SELL,
-            RecommendationType.FREQ_BOUGHT_TOGETHER,
+            RecommendationType.FREQUENTLY_BOUGHT_TOGETHER,
             RecommendationType.RECOMMENDED_FOR_YOU,
             RecommendationType.TRENDING,
             RecommendationType.UNKNOWN,

@@ -20,7 +20,7 @@ class RecommendationType(Enum):
 
     UPSELL = 0
     CROSS_SELL = 1
-    FREQ_BOUGHT_TOGETHER = 2
+    FREQUENTLY_BOUGHT_TOGETHER = 2
     RECOMMENDED_FOR_YOU = 3
     TRENDING = 4
     UNKNOWN = 5
