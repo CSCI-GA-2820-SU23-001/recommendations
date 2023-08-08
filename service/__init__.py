@@ -26,7 +26,7 @@ api = Api(
     title="Recommendation REST API Service",
     description="This is a Recommendation server.",
     default="recommendations",
-    default_label="Recommendations warehouse operations",
+    default_label="Recommendations operations",
     doc="/apidocs",  # default also could use doc='/apidocs/'
     prefix="/api",
 )
