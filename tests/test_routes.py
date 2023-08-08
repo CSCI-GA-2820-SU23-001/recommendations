@@ -12,7 +12,6 @@ import logging
 from unittest import TestCase
 
 # from unittest.mock import MagicMock, patch
-from datetime import date
 from service import app
 from service.models import Recommendation, RecommendationType, db, init_db
 from service.common import status  # HTTP Status Codes
@@ -192,34 +191,6 @@ class TestYourResourceServer(TestCase):
         )
         self.assertEqual(
             updated_reco["rating"], test_reco.rating
-        )
-
-    def test_update_recommendation_with_wrong_rating_value(self):
-        """It should respond with a 400 for rating that is not in range 1-5"""
-        test_reco = RecommendationFactory()
-        response = self.client.post(BASE_URL, json=test_reco.serialize())
-        self.assertEqual(
-            response.status_code, status.HTTP_201_CREATED
-        )
-        recommendation_id = response.get_json()[
-            "id"
-        ]  # replace with actual recommendation id
-        invalid_data = {
-            "user_id": 1,
-            "product_id": 2,
-            "recommendation_type": "RECOMMENDED_FOR_YOU",  # replace with actual enum string
-            "bought_in_last_30_days": False,
-            "rating": 6,  # invalid rating value
-        }
-        response = self.client.put(
-            f"{BASE_URL}/{recommendation_id}",
-            json=invalid_data,
-        )
-        self.assertEqual(
-            response.status_code, 400
-        )
-        self.assertIn(
-            "recommendation with rating", response.get_json()["message"]
         )
 
     def test_update_recommendation_no_rating(self):

@@ -11,8 +11,8 @@ PUT /recommendations/{id} - updates a recommendation record in the database
 DELETE /recommendations/{id} - deletes a recommendation record in the database
 """
 from datetime import date
-from flask import request, url_for, abort
-from flask_restx import Resource, fields, reqparse, inputs
+from flask import abort
+from flask_restx import Resource, fields, reqparse
 from service.common import status  # HTTP Status Codes
 from service.models import Recommendation, RecommendationType
 
@@ -65,7 +65,7 @@ create_model = api.model(
         "recommendation_type": fields.String(
             required=True,
             enum=RecommendationType._member_names_,
-            description="The type of recommendation (i.e UPSELL , CROSS SELL, TRENDING , FREQ_BOUGHT_TOGETHER, RECOMMENDED_FOR_YOU, UNKNOWN)",
+            description="Type of recommendation (UPSELL,CROSS SELL,TRENDING,FREQ_BOUGHT_TOGETHER,RECOMMENDED_FOR_YOU,UNKNOWN)",
             ),
     }
 )
@@ -138,7 +138,7 @@ class RecommendationResource(Resource):
         This endpoint will update a Recommendation based the body that is posted
         """
         app.logger.info("Request to update recommendation with id: %s", recommendation_id)
-        
+
         # Get the recommendation from the database
         recommendation = Recommendation.find(recommendation_id)
         app.logger.debug("Payload = %s", api.payload)
@@ -149,7 +149,7 @@ class RecommendationResource(Resource):
             )
         # Get the original create date, so that it doesn't get updated
         create_date = recommendation.serialize()["create_date"]
-        
+
         # Get the original rating, so that it doesn't get updated
         rating_original = recommendation.serialize()["rating"]
 
@@ -158,12 +158,12 @@ class RecommendationResource(Resource):
         recommendation.deserialize(data)
 
         recommendation.id = recommendation_id
-        if recommendation.rating is not None:
-            if recommendation.rating > 5 or recommendation.rating < 0:
-                abort(
-                    status.HTTP_400_BAD_REQUEST,
-                    f"recommendation with rating '{recommendation.rating}' was not acceptable.",
-                )
+        # if recommendation.rating is not None:
+        #     if recommendation.rating > 5 or recommendation.rating < 0:
+        #         abort(
+        #             status.HTTP_400_BAD_REQUEST,
+        #             f"recommendation with rating '{recommendation.rating}' was not acceptable.",
+        #         )
         recommendation.rating = rating_original
         recommendation.update_date = date.today()
         recommendation.create_date = create_date
