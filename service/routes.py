@@ -59,15 +59,13 @@ create_model = api.model(
             description="Has the user bought the product in the last 30 days?",
             ),
         "rating": fields.Integer(
-            required=True,
+            required=False,
             description="The rating for the recommendation (0 to 5)",
-            # min=0,
-            # max=5,
             ),
         "recommendation_type": fields.String(
             required=True,
             enum=RecommendationType._member_names_,
-            description="The type of recommendation (i.e UPSELL , CROSS SELL, TRENDING etc)",
+            description="The type of recommendation (i.e UPSELL , CROSS SELL, TRENDING , FREQ_BOUGHT_TOGETHER, RECOMMENDED_FOR_YOU, UNKNOWN)",
             ),
     }
 )
@@ -76,9 +74,9 @@ recommendation_model = api.inherit(
     "RecommendationModel",
     create_model,
     {
-        "_id": fields.Integer(
+        "id": fields.Integer(
             readOnly=True, description="The unique id assigned internally by service"
-        ),
+        )
     },
 )
 
@@ -86,30 +84,6 @@ recommendation_model = api.inherit(
 recommendation_args = reqparse.RequestParser()
 recommendation_args.add_argument(
     "user_id", type=int, location="args", required=False, help="List Recommendations for the user_id"
-)
-recommendation_args.add_argument(
-    "product_id", type=int, location="args", required=False, help="List Recommendations for the product_id"
-)
-recommendation_args.add_argument(
-    "bought_in_last_30_days",
-    type=inputs.boolean,
-    location="args",
-    required=False,
-    help="List Recommendations that are bought in last 30 days",
-)
-recommendation_args.add_argument(
-    "rating",
-    type=int,
-    location="args",
-    required=False,
-    help="List Recommendations based on ratings",
-)
-recommendation_args.add_argument(
-    "recommendation_type",
-    type=str,
-    location="args",
-    required=False,
-    help="List Recommendations based on the types",
 )
 
 
@@ -164,8 +138,8 @@ class RecommendationResource(Resource):
         This endpoint will update a Recommendation based the body that is posted
         """
         app.logger.info("Request to update recommendation with id: %s", recommendation_id)
-        # check_content_type("api.payload")
-
+        # check_content_type("application/json")
+        
         # Get the recommendation from the database
         recommendation = Recommendation.find(recommendation_id)
         app.logger.debug("Payload = %s", api.payload)
@@ -176,17 +150,23 @@ class RecommendationResource(Resource):
             )
         # Get the original create date, so that it doesn't get updated
         create_date = recommendation.serialize()["create_date"]
+        
+        # Get the original rating, so that it doesn't get updated
+        rating_original = recommendation.serialize()["rating"]
 
         # Deserialize the incoming payload into the recommendation
         data = api.payload
         recommendation.deserialize(data)
 
         recommendation.id = recommendation_id
-        if recommendation.rating > 5 or recommendation.rating < 0:
-            abort(
-                status.HTTP_400_BAD_REQUEST,
-                f"recommendation with rating '{recommendation.rating}' was not acceptable.",
-            )
+        if recommendation.rating:
+            if recommendation.rating > 5 or recommendation.rating < 0:
+                abort(
+                    status.HTTP_400_BAD_REQUEST,
+                    f"recommendation with rating '{recommendation.rating}' was not acceptable.",
+                )
+            else:
+                recommendation.rating = rating_original
         recommendation.update_date = date.today()
         recommendation.create_date = create_date
         recommendation.update()
@@ -204,9 +184,9 @@ class RecommendationResource(Resource):
         This endpoint will delete a Recommendation with the specified id
         """
         app.logger.info("Request to delete a recommendation_id %s", recommendation_id)
-        recommendation_id = Recommendation.find(recommendation_id)
-        if recommendation_id:
-            recommendation_id.delete()
+        recommendation = Recommendation.find(recommendation_id)
+        if recommendation:
+            recommendation.delete()
         app.logger.info("Recommendation with ID %s delete complete.", recommendation_id)
         return "", status.HTTP_204_NO_CONTENT
 
@@ -251,7 +231,7 @@ class RecommendationCollection(Resource):
     # ------------------------------------------------------------------
     # ADD A NEW RECOMMENDATION
     # ------------------------------------------------------------------
-    @api.doc("create_pets")
+    @api.doc("create_recommendations")
     @api.response(400, "The posted data was not valid")
     @api.expect(create_model)
     @api.marshal_with(recommendation_model, code=201)
@@ -263,15 +243,15 @@ class RecommendationCollection(Resource):
         app.logger.info("Request to create a recommendation")
         # check_content_type("application/json")
         recommendation = Recommendation()
+        app.logger.debug("Payload = %s", api.payload)
         recommendation.deserialize(api.payload)
         recommendation.create()
-        message = recommendation.serialize()
-        location_url = url_for(
-            "get_recommendation", recommendation_id=recommendation.id, _external=True
+        location_url = api.url_for(
+            RecommendationResource, recommendation_id=recommendation.id, _external=True
         )
 
         app.logger.info("Recommendation with ID [%s] created.", recommendation.id)
-        return message, status.HTTP_201_CREATED, {"Location": location_url}
+        return recommendation.serialize(), status.HTTP_201_CREATED, {"Location": location_url}
 
 ######################################################################
 #  PATH: /recommendations/{recommendation_id}/rating
@@ -280,8 +260,8 @@ class RecommendationCollection(Resource):
 
 @api.route("/recommendations/<recommendation_id>/rating")
 @api.param("recommendation_id", "The Recommendation identifier")
-class PurchaseResource(Resource):
-    """Purchase actions on a Recommendation"""
+class RatingResource(Resource):
+    """Rating actions on a Recommendation"""
 
     @api.doc("rating_recommendations")
     @api.response(404, "recommendation not found")
@@ -292,7 +272,6 @@ class PurchaseResource(Resource):
         This endpoint will rate a Recommendation
         """
         app.logger.info("Request to update recommendation rating with id: %s", recommendation_id)
-        check_content_type("application/json")
 
         # Get the recommendation from the database
         recommendation = Recommendation.find(recommendation_id)
@@ -302,8 +281,8 @@ class PurchaseResource(Resource):
                 f"Recommendation with id '{recommendation_id}' was not found.",
             )
 
-        rating = api.payload
-        recommendation.deserialize(rating)
+        data = api.payload
+        rating = data["rating"]
 
         # rating = request.get_json().get("rating")
         if rating is not None and isinstance(rating, int) and 0 <= rating <= 5:
@@ -323,22 +302,22 @@ class PurchaseResource(Resource):
 ######################################################################
 
 
-def check_content_type(content_type):
-    """
-    Checks that the media type is correct
-    """
-    if "Content-Type" not in request.headers:
-        app.logger.error("No Content-Type specified.")
-        abort(
-            status.HTTP_415_UNSUPPORTED_MEDIA_TYPE,
-            f"Content-Type must be {content_type}",
-        )
+# def check_content_type(content_type):
+#     """
+#     Checks that the media type is correct
+#     """
+#     if "Content-Type" not in request.headers:
+#         app.logger.error("No Content-Type specified.")
+#         abort(
+#             status.HTTP_415_UNSUPPORTED_MEDIA_TYPE,
+#             f"Content-Type must be {content_type}",
+#         )
 
-    if request.headers["Content-Type"] == content_type:
-        return
+#     if request.headers["Content-Type"] == content_type:
+#         return
 
-    app.logger.error("Invalid Content-Type: %s", request.headers["Content-Type"])
-    abort(
-        status.HTTP_415_UNSUPPORTED_MEDIA_TYPE,
-        f"Content-Type must be {content_type}",
-    )
+#     app.logger.error("Invalid Content-Type: %s", request.headers["Content-Type"])
+#     abort(
+#         status.HTTP_415_UNSUPPORTED_MEDIA_TYPE,
+#         f"Content-Type must be {content_type}",
+#     )
