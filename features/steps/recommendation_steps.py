@@ -21,7 +21,7 @@ def step_impl(context):
     """ Delete all Recommendations and load new ones """
 
     # List all of the recommendations and delete them one by one
-    rest_endpoint = f"{context.base_url}/recommendations"
+    rest_endpoint = f"{context.base_url}/api/recommendations"
     resp = requests.get(rest_endpoint)
     assert(resp.status_code == HTTP_200_OK)
     for recommendation in resp.json():
@@ -38,10 +38,7 @@ def step_impl(context):
             "recommendation_type" : row['recommendation_type'] 
         }
            
-        context.resp = requests.post(
-            rest_endpoint,
-            json=payload
-            )
+        context.resp = requests.post(rest_endpoint,json=payload)
         assert context.resp.status_code == HTTP_201_CREATED
 
 
