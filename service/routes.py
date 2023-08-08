@@ -61,8 +61,8 @@ create_model = api.model(
         "rating": fields.Integer(
             required=True,
             description="The rating for the recommendation (0 to 5)",
-            min=0,
-            max=5,
+            # min=0,
+            # max=5,
             ),
         "recommendation_type": fields.String(
             required=True,
@@ -76,7 +76,7 @@ recommendation_model = api.inherit(
     "RecommendationModel",
     create_model,
     {
-        "_id": fields.String(
+        "_id": fields.Integer(
             readOnly=True, description="The unique id assigned internally by service"
         ),
     },
@@ -164,7 +164,7 @@ class RecommendationResource(Resource):
         This endpoint will update a Recommendation based the body that is posted
         """
         app.logger.info("Request to update recommendation with id: %s", recommendation_id)
-        check_content_type("api.payload")
+        # check_content_type("api.payload")
 
         # Get the recommendation from the database
         recommendation = Recommendation.find(recommendation_id)

@@ -21,8 +21,8 @@ from tests.factories import RecommendationFactory
 DATABASE_URI = os.getenv(
     "DATABASE_URI", "postgresql://postgres:postgres@localhost:5432/testdb"
 )
-BASE_URL = "/recommendations"
-POP_REC_URL = "/recommendations/popular"
+BASE_URL = "/api/recommendations"
+CONTENT_TYPE_JSON = "application/json"
 
 
 ######################################################################
