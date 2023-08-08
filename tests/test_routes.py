@@ -191,11 +191,8 @@ class TestYourResourceServer(TestCase):
             RecommendationType.RECOMMENDED_FOR_YOU.name,
         )
         self.assertEqual(
-            updated_reco["rating"], 4
+            updated_reco["rating"], test_reco.rating
         )
-        # self.assertEqual(
-        #     updated_reco["update_date"], date.today().strftime("%Y-%m-%d")
-        # )
 
     def test_update_recommendation_with_wrong_rating_value(self):
         """It should respond with a 400 for rating that is not in range 1-5"""
