@@ -215,7 +215,7 @@ class TestYourResourceServer(TestCase):
             "rating": 6,  # invalid rating value
         }
         response = self.client.put(
-            f"/{BASE_URL}/{recommendation_id}",
+            f"{BASE_URL}/{recommendation_id}",
             json=invalid_data,
         )
         self.assertEqual(
@@ -244,16 +244,11 @@ class TestYourResourceServer(TestCase):
             "recommendation_type": "RECOMMENDED_FOR_YOU",  # replace with actual enum string
             "bought_in_last_30_days": False
         }
-        response = self.client.put(f"/{BASE_URL}/{recommendation_id}", json=request_data)
+        response = self.client.put(f"{BASE_URL}/{recommendation_id}", json=request_data)
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         updated_recommendation = response.get_json()
         self.assertEqual(updated_recommendation["rating"], previous_rating)
-
-    # def test_update_recommendation_with_non_integer_id(self):
-    #     """It should respond with a 404 for non-integer ids"""
-    #     response = self.client.put(BASE_URL + "/" + "abc", json={})
-    #     self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
     def test_recommendation_not_found(self):
         """
