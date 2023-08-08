@@ -28,7 +28,7 @@ api = Api(
     default="recommendations",
     default_label="Recommendations warehouse operations",
     doc="/apidocs",  # default also could use doc='/apidocs/'
-    prefix="/api/recommendations",
+    prefix="/api",
 )
 
 # Dependencies require we import the routes AFTER the Flask app is created
