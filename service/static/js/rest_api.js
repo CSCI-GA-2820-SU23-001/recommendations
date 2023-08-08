@@ -55,7 +55,7 @@ $(function () {
 
         let ajax = $.ajax({
             type: "POST",
-            url: "/recommendations",
+            url: "/api/recommendations",
             contentType: "application/json",
             data: JSON.stringify(data),
         });
@@ -84,21 +84,19 @@ $(function () {
         let product_id = $("#reco_product_id").val();
         let bought_in_last_30_days = $("#reco_bought_in_last_30_days").val() == "true";
         let recommendation_type = $("#reco_recommendation_type ").val();
-        let rating = $("#reco_rating").val();
 
         let data = {
             "user_id": parseInt(user_id),
             "product_id": parseInt(product_id),
             "bought_in_last_30_days": bought_in_last_30_days,
             "recommendation_type": recommendation_type,
-            "rating": parseInt(rating),
         };
 
         $("#flash_message").empty();
 
         let ajax = $.ajax({
             type: "PUT",
-            url: `/recommendations/${reco_id}`,
+            url: `/api/recommendations/${reco_id}`,
             contentType: "application/json",
             data: JSON.stringify(data)
         })
@@ -126,7 +124,7 @@ $(function () {
 
         let ajax = $.ajax({
             type: "GET",
-            url: `/recommendations/${reco_id}`,
+            url: `/api/recommendations/${reco_id}`,
             contentType: "application/json",
             data: ''
         })
@@ -156,7 +154,7 @@ $(function () {
 
         let ajax = $.ajax({
             type: "DELETE",
-            url: `/recommendations/${reco_id}`,
+            url: `/api/recommendations/${reco_id}`,
             contentType: "application/json",
             data: '',
         })
@@ -199,7 +197,7 @@ $(function () {
 
         let ajax = $.ajax({
             type: "GET",
-            url: `/recommendations?${queryString}`,
+            url: `/api/recommendations?${queryString}`,
             contentType: "application/json",
             data: ''
         })
@@ -260,7 +258,7 @@ $(function () {
 
         let ajax = $.ajax({
             type: "PUT",
-            url: `/recommendations/${reco_id}/rating`,
+            url: `/api/recommendations/${reco_id}/rating`,
             contentType: "application/json",
             data: JSON.stringify(data)
         })

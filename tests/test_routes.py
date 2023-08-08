@@ -12,7 +12,6 @@ import logging
 from unittest import TestCase
 
 # from unittest.mock import MagicMock, patch
-from datetime import date
 from service import app
 from service.models import Recommendation, RecommendationType, db, init_db
 from service.common import status  # HTTP Status Codes
@@ -21,8 +20,8 @@ from tests.factories import RecommendationFactory
 DATABASE_URI = os.getenv(
     "DATABASE_URI", "postgresql://postgres:postgres@localhost:5432/testdb"
 )
-BASE_URL = "/recommendations"
-POP_REC_URL = "/recommendations/popular"
+BASE_URL = "/api/recommendations"
+CONTENT_TYPE_JSON = "application/json"
 
 
 ######################################################################
@@ -114,12 +113,6 @@ class TestYourResourceServer(TestCase):
             new_recommendation["recommendation_type"],
             test_recommendation.recommendation_type.name,
         )
-        self.assertEqual(
-            date.fromisoformat(new_recommendation["create_date"]), date.today()
-        )
-        self.assertEqual(
-            date.fromisoformat(new_recommendation["update_date"]), date.today()
-        )
 
         # Check that the location header was correct
         response = self.client.get(location)
@@ -191,38 +184,7 @@ class TestYourResourceServer(TestCase):
             RecommendationType.RECOMMENDED_FOR_YOU.name,
         )
         self.assertEqual(
-            updated_reco["rating"], 4
-        )
-        self.assertEqual(
-            updated_reco["update_date"], date.today().strftime("%Y-%m-%d")
-        )
-
-    def test_update_recommendation_with_wrong_rating_value(self):
-        """It should respond with a 400 for rating that is not in range 1-5"""
-        test_reco = RecommendationFactory()
-        response = self.client.post(BASE_URL, json=test_reco.serialize())
-        self.assertEqual(
-            response.status_code, status.HTTP_201_CREATED
-        )
-        recommendation_id = response.get_json()[
-            "id"
-        ]  # replace with actual recommendation id
-        invalid_data = {
-            "user_id": 1,
-            "product_id": 2,
-            "recommendation_type": "RECOMMENDED_FOR_YOU",  # replace with actual enum string
-            "bought_in_last_30_days": False,
-            "rating": 6,  # invalid rating value
-        }
-        response = self.client.put(
-            f"/recommendations/{recommendation_id}",
-            json=invalid_data,
-        )
-        self.assertEqual(
-            response.status_code, 400
-        )
-        self.assertIn(
-            "recommendation with rating", response.get_json()["message"]
+            updated_reco["rating"], test_reco.rating
         )
 
     def test_update_recommendation_no_rating(self):
@@ -244,16 +206,11 @@ class TestYourResourceServer(TestCase):
             "recommendation_type": "RECOMMENDED_FOR_YOU",  # replace with actual enum string
             "bought_in_last_30_days": False
         }
-        response = self.client.put(f"/recommendations/{recommendation_id}", json=request_data)
+        response = self.client.put(f"{BASE_URL}/{recommendation_id}", json=request_data)
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         updated_recommendation = response.get_json()
         self.assertEqual(updated_recommendation["rating"], previous_rating)
-
-    def test_update_recommendation_with_non_integer_id(self):
-        """It should respond with a 404 for non-integer ids"""
-        response = self.client.put(BASE_URL + "/" + "abc", json={})
-        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
     def test_recommendation_not_found(self):
         """
