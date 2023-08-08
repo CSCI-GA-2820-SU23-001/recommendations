@@ -219,7 +219,6 @@ tests/              - test cases package
     "product_id": 2,
     "recommendation_type": "RECOMMENDED_FOR_YOU",
     "bought_in_last_30_days": false
-    "rating": 5
 }
 ```
 ##### Response

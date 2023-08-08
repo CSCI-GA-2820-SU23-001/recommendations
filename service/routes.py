@@ -158,12 +158,6 @@ class RecommendationResource(Resource):
         recommendation.deserialize(data)
 
         recommendation.id = recommendation_id
-        # if recommendation.rating is not None:
-        #     if recommendation.rating > 5 or recommendation.rating < 0:
-        #         abort(
-        #             status.HTTP_400_BAD_REQUEST,
-        #             f"recommendation with rating '{recommendation.rating}' was not acceptable.",
-        #         )
         recommendation.rating = rating_original
         recommendation.update_date = date.today()
         recommendation.create_date = create_date

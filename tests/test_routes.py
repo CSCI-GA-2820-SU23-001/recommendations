@@ -113,12 +113,6 @@ class TestYourResourceServer(TestCase):
             new_recommendation["recommendation_type"],
             test_recommendation.recommendation_type.name,
         )
-        # self.assertEqual(
-        #     date.fromisoformat(new_recommendation["create_date"]), date.today()
-        # )
-        # self.assertEqual(
-        #     date.fromisoformat(new_recommendation["update_date"]), date.today()
-        # )
 
         # Check that the location header was correct
         response = self.client.get(location)
