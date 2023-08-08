@@ -164,8 +164,7 @@ class RecommendationResource(Resource):
                     status.HTTP_400_BAD_REQUEST,
                     f"recommendation with rating '{recommendation.rating}' was not acceptable.",
                 )
-        else:
-            recommendation.rating = rating_original
+        recommendation.rating = rating_original
         recommendation.update_date = date.today()
         recommendation.create_date = create_date
         recommendation.update()
