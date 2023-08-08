@@ -138,7 +138,6 @@ class RecommendationResource(Resource):
         This endpoint will update a Recommendation based the body that is posted
         """
         app.logger.info("Request to update recommendation with id: %s", recommendation_id)
-        # check_content_type("application/json")
         
         # Get the recommendation from the database
         recommendation = Recommendation.find(recommendation_id)
@@ -159,14 +158,14 @@ class RecommendationResource(Resource):
         recommendation.deserialize(data)
 
         recommendation.id = recommendation_id
-        if recommendation.rating:
+        if recommendation.rating is not None:
             if recommendation.rating > 5 or recommendation.rating < 0:
                 abort(
                     status.HTTP_400_BAD_REQUEST,
                     f"recommendation with rating '{recommendation.rating}' was not acceptable.",
                 )
-            else:
-                recommendation.rating = rating_original
+        else:
+            recommendation.rating = rating_original
         recommendation.update_date = date.today()
         recommendation.create_date = create_date
         recommendation.update()
@@ -213,13 +212,6 @@ class RecommendationCollection(Resource):
         args = recommendation_args.parse_args()
 
         if args["user_id"]:
-            try:
-                args["user_id"] = int(args["user_id"])
-            except ValueError:
-                abort(
-                    status.HTTP_400_BAD_REQUEST,
-                    f"User id '{args['user_id']}' is not an integer in the query parameters.",
-                )
             recommendations = Recommendation.find_by_user_id(args["user_id"])
         else:
             recommendations = Recommendation.all()
@@ -296,28 +288,3 @@ class RatingResource(Resource):
 
         app.logger.info("Recommendation rating with ID [%s] updated.", recommendation.id)
         return recommendation.serialize(), status.HTTP_200_OK
-
-######################################################################
-#  U T I L I T Y   F U N C T I O N S
-######################################################################
-
-
-# def check_content_type(content_type):
-#     """
-#     Checks that the media type is correct
-#     """
-#     if "Content-Type" not in request.headers:
-#         app.logger.error("No Content-Type specified.")
-#         abort(
-#             status.HTTP_415_UNSUPPORTED_MEDIA_TYPE,
-#             f"Content-Type must be {content_type}",
-#         )
-
-#     if request.headers["Content-Type"] == content_type:
-#         return
-
-#     app.logger.error("Invalid Content-Type: %s", request.headers["Content-Type"])
-#     abort(
-#         status.HTTP_415_UNSUPPORTED_MEDIA_TYPE,
-#         f"Content-Type must be {content_type}",
-#     )
