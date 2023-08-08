@@ -108,7 +108,7 @@ Feature: The recommendation service back-end
         Then I should see the message "Recommendation has been Deleted!"
         When I paste the "ID" field
         And I press the "Retrieve" button
-        Then I should see the message "404 Not Found"
+        Then I should see the message "not found"
         When I press the "Clear" button
         And I press the "Search" button
         Then I should see the message "Success"
