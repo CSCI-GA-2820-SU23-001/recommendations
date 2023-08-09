@@ -51,7 +51,8 @@ create_model = api.model(
             description="The user_id",
             ),
         "product_id": fields.Integer(
-            required=True, description="The product_id"
+            required=True,
+            description="The product_id"
             ),
         # pylint: disable=protected-access
         "bought_in_last_30_days": fields.Boolean(
@@ -61,7 +62,7 @@ create_model = api.model(
         "recommendation_type": fields.String(
             required=True,
             enum=RecommendationType._member_names_,
-            description="Type of recommendation (UPSELL,CROSS_SELL,TRENDING,FREQUENTLY_BOUGHT_TOGETHER,RECOMMENDED_FOR_YOU,UNKNOWN)",
+            description="Recommendation Type (UPSELL,CROSS_SELL,TRENDING,FREQ_BOUGHT_TOGETHER,RECOMMENDED_FOR_YOU,UNKNOWN)",
             ),
     }
 )
