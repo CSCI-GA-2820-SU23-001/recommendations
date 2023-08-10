@@ -51,21 +51,28 @@ create_model = api.model(
             description="The user_id",
             ),
         "product_id": fields.Integer(
-            required=True, description="The product_id"
+            required=True,
+            description="The product_id"
             ),
         # pylint: disable=protected-access
         "bought_in_last_30_days": fields.Boolean(
             required=True,
             description="Has the user bought the product in the last 30 days?",
             ),
-        "rating": fields.Integer(
-            required=False,
-            description="The rating for the recommendation (0 to 5)",
-            ),
         "recommendation_type": fields.String(
             required=True,
             enum=RecommendationType._member_names_,
-            description="Type of recommendation (UPSELL,CROSS SELL,TRENDING,FREQ_BOUGHT_TOGETHER,RECOMMENDED_FOR_YOU,UNKNOWN)",
+            description="Recommendation Type (UPSELL,CROSS_SELL,TRENDING,FREQ_BOUGHT_TOGETHER,RECOMMENDED_FOR_YOU,UNKNOWN)",
+            ),
+    }
+)
+
+rate_model = api.model(
+    "RatingModel",
+    {
+        "rating": fields.Integer(
+            required=True,
+            description="The rating for the recommendation (1 to 5)",
             ),
     }
 )
@@ -76,6 +83,9 @@ recommendation_model = api.inherit(
     {
         "id": fields.Integer(
             readOnly=True, description="The unique id assigned internally by service"
+        ),
+        "rating": fields.Integer(
+            readOnly=True, description="The rating given by user for this recommendation"
         )
     },
 )
@@ -90,7 +100,7 @@ recommendation_args.add_argument(
 ######################################################################
 #  PATH: /recommendations/{recommendation_id}
 ######################################################################
-@api.route("/recommendations/<recommendation_id>")
+@api.route("/recommendations/<int:recommendation_id>")
 @api.param("recommendation_id", "The recommendation identifier")
 class RecommendationResource(Resource):
     """
@@ -130,7 +140,7 @@ class RecommendationResource(Resource):
     @api.doc("update_recommendations")
     @api.response(404, "Recommendation not found")
     @api.response(400, "The posted recommendation data was not valid")
-    @api.expect(recommendation_model)
+    @api.expect(create_model)
     @api.marshal_with(recommendation_model)
     def put(self, recommendation_id):
         """
@@ -230,6 +240,7 @@ class RecommendationCollection(Resource):
         recommendation = Recommendation()
         app.logger.debug("Payload = %s", api.payload)
         recommendation.deserialize(api.payload)
+        recommendation.create_date = date.today()
         recommendation.create()
         location_url = api.url_for(
             RecommendationResource, recommendation_id=recommendation.id, _external=True
@@ -243,14 +254,16 @@ class RecommendationCollection(Resource):
 ######################################################################
 
 
-@api.route("/recommendations/<recommendation_id>/rating")
+@api.route("/recommendations/<int:recommendation_id>/rating")
 @api.param("recommendation_id", "The Recommendation identifier")
 class RatingResource(Resource):
     """Rating actions on a Recommendation"""
 
     @api.doc("rating_recommendations")
     @api.response(404, "recommendation not found")
-    @api.response(409, "The Recommendation is not available for rating")
+    @api.response(400, "Bad Request. Rating is not given or not valid")
+    @api.expect(rate_model)
+    @api.marshal_with(recommendation_model)
     def put(self, recommendation_id):
         """
         Rate a Recommendation
@@ -267,16 +280,16 @@ class RatingResource(Resource):
             )
 
         data = api.payload
-        rating = data["rating"]
+        rating = data.get("rating")
 
         # rating = request.get_json().get("rating")
-        if rating is not None and isinstance(rating, int) and 0 <= rating <= 5:
+        if rating is not None and isinstance(rating, int) and 1 <= rating <= 5:
             recommendation.rating = rating
             recommendation.update()
         else:
             abort(
                 status.HTTP_400_BAD_REQUEST,
-                "Rating must be an integer between 0 and 5 (inclusive).",
+                "Rating must be an integer between 1 and 5 (inclusive).",
             )
 
         app.logger.info("Recommendation rating with ID [%s] updated.", recommendation.id)

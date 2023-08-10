@@ -278,7 +278,7 @@ class TestYourResourceServer(TestCase):
 
         # Verify the response
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertIn("Rating must be an integer between 0 and 5 (inclusive).", response.get_json()["message"])
+        self.assertIn("Rating must be an integer between 1 and 5 (inclusive).", response.get_json()["message"])
 
     def test_update_rating_with_wrong_values(self):
         """It should respond with a 400 for ratings beyond range"""
@@ -291,7 +291,7 @@ class TestYourResourceServer(TestCase):
 
         # Verify the response
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertIn("Rating must be an integer between 0 and 5 (inclusive).", response.get_json()["message"])
+        self.assertIn("Rating must be an integer between 1 and 5 (inclusive).", response.get_json()["message"])
 
     ######################################################################
     #  DELETE A RECOMMENDATION (READ)
