@@ -1,5 +1,5 @@
 """
-Pet Store Service with Swagger
+Recommendations Service with Swagger
 
 Paths:
 ------
