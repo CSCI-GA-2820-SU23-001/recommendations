@@ -380,7 +380,6 @@ Check for successful deployments:<br>
 kc get all -n <kubernets_namespace>
 
 
-
 ## License
 
 Copyright (c) John Rofrano. All rights reserved.
