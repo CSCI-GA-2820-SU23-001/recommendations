@@ -133,6 +133,13 @@ class TestRecommendation(unittest.TestCase):
         recommendation = Recommendation()
         self.assertRaises(DataValidationError, recommendation.deserialize, data)
 
+    def test_deserialize_wrong_recommendation_type_data(self):
+        """It should not de-serialize a Recommendation with wrong recommendation_type data type"""
+        data = RecommendationFactory().serialize()
+        data["recommendation_type"] = "UPSEL"
+        recommendation = Recommendation()
+        self.assertRaises(DataValidationError, recommendation.deserialize, data)
+
     def test_deserialize_wrong_rating_data_type(self):
         """It should not de-serialize a Recommendation with wrong rating data type"""
         data = RecommendationFactory().serialize()

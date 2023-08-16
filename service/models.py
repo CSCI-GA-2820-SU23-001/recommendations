@@ -148,6 +148,10 @@ class Recommendation(db.Model):
                 "Invalid Recommendation: body of request contained bad or no data - "
                 "Error message: " + str(error)
             ) from error
+        except AttributeError as error:
+            raise DataValidationError(
+                "Invalid Recommendation: bad data " + error.args[0]
+            ) from error
         return self
 
     @classmethod

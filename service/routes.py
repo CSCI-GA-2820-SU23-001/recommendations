@@ -62,7 +62,7 @@ create_model = api.model(
         "recommendation_type": fields.String(
             required=True,
             enum=RecommendationType._member_names_,
-            description="Recommendation Type (UPSELL,CROSS_SELL,TRENDING,FREQ_BOUGHT_TOGETHER,RECOMMENDED_FOR_YOU,UNKNOWN)",
+            description="UPSELL, CROSS_SELL, TRENDING, FREQUENTLY_BOUGHT_TOGETHER, RECOMMENDED_FOR_YOU, UNKNOWN",
             ),
     }
 )
